@@ -1,58 +1,67 @@
 {% extends "base.html" %}
-{% load humanize %}
+{% load humanize i18n %}
 
-{% block title %}SplitMate｜一起旅行，輕鬆分帳{% endblock %}
+{% block title %}{% trans "SplitMate｜一起活動，輕鬆分帳" %}{% endblock %}
 
 {% block content %}
 <section class="hero">
     <div class="container hero-grid">
         <div class="hero-copy">
-            <p class="eyebrow">TRAVEL LIGHTER, TOGETHER</p>
+            <p class="eyebrow">SHARE MOMENTS, SPLIT SIMPLY</p>
             <h1>Split expenses.<br><span>Not friendships.</span></h1>
-            <p class="hero-lead">一起記錄支出，<br>簡單完成分帳。</p>
-            <a class="button button-primary" href="{% url 'expenses:create_trip' %}">建立新旅程 <span aria-hidden="true">→</span></a>
+            <p class="hero-lead">{% trans "一起記錄支出，簡單完成分帳。" %}</p>
+            <a class="button button-primary" href="{% url 'expenses:create_activity' %}">{% trans "建立新活動" %} <span aria-hidden="true">→</span></a>
         </div>
         <div class="hero-art" aria-hidden="true">
             <div class="hero-card hero-card-main">
-                <span class="hero-card-label">本次旅程</span>
-                <strong>Tokyo Trip</strong>
-                <span class="hero-card-amount">NT$ 11,000</span>
+                <span class="hero-card-label">{% trans "最新活動" %}</span>
+                {% if latest_activity %}
+                <strong>{{ latest_activity.name }}</strong>
+                <span class="hero-card-amount">NT$ {{ latest_activity.total_expense|floatformat:"-2"|intcomma:False }}</span>
+                {% else %}
+                <strong>{% trans "建立第一個活動" %}</strong>
+                {% endif %}
             </div>
-            <div class="hero-card hero-card-note">4 位旅伴<br>3 筆共同支出</div>
+            {% if latest_activity %}
+            <div class="hero-card hero-card-note">
+                {% blocktrans count count=latest_activity.member_count %}{{ count }} 位成員{% plural %}{{ count }} 位成員{% endblocktrans %}<br>
+                {% blocktrans count count=latest_activity.expense_count %}{{ count }} 筆共同支出{% plural %}{{ count }} 筆共同支出{% endblocktrans %}
+            </div>
+            {% endif %}
         </div>
     </div>
 </section>
 
-<section class="section container" aria-labelledby="trips-title">
+<section class="section container" aria-labelledby="activities-title">
     <div class="section-heading">
         <div>
-            <p class="eyebrow">YOUR TRIPS</p>
-            <h2 id="trips-title">目前的旅程</h2>
+            <p class="eyebrow">YOUR ACTIVITIES</p>
+            <h2 id="activities-title">{% trans "目前的活動" %}</h2>
         </div>
-        {% if trips %}<span class="count-badge">{{ trips|length }} 個旅程</span>{% endif %}
+        {% if activities %}<span class="count-badge">{% blocktrans count count=activities|length %}{{ count }} 個活動{% plural %}{{ count }} 個活動{% endblocktrans %}</span>{% endif %}
     </div>
 
-    {% if trips %}
+    {% if activities %}
     <div class="card-grid">
-        {% for trip in trips %}
-        <article class="trip-card">
-            <div class="trip-card-top">
-                <span class="trip-icon" aria-hidden="true">✦</span>
-                <span class="member-count">{{ trip.member_count }} 位成員</span>
+        {% for activity in activities %}
+        <article class="activity-card">
+            <div class="activity-card-top">
+                <span class="activity-icon" aria-hidden="true">✦</span>
+                <span class="member-count">{% blocktrans count count=activity.member_count %}{{ count }} 位成員{% plural %}{{ count }} 位成員{% endblocktrans %}</span>
             </div>
-            <h3>{{ trip.name }}</h3>
-            <p class="muted">總支出</p>
-            <p class="money">NT$ {{ trip.total_expense|floatformat:"-2"|intcomma:False }}</p>
-            <a class="card-link" href="{% url 'expenses:trip_detail' trip.pk %}">查看旅程 <span aria-hidden="true">→</span></a>
+            <h3>{{ activity.name }}</h3>
+            <p class="muted">{% trans "總支出" %}</p>
+            <p class="money">NT$ {{ activity.total_expense|floatformat:"-2"|intcomma:False }}</p>
+            <a class="card-link" href="{% url 'expenses:activity_detail' activity.pk %}">{% trans "查看活動" %} <span aria-hidden="true">→</span></a>
         </article>
         {% endfor %}
     </div>
     {% else %}
     <div class="empty-state">
         <div class="empty-icon" aria-hidden="true">＋</div>
-        <h3>還沒有旅程</h3>
-        <p>建立第一個旅程，邀請旅伴一起記錄共同支出。</p>
-        <a class="button button-secondary" href="{% url 'expenses:create_trip' %}">開始建立</a>
+        <h3>{% trans "還沒有活動" %}</h3>
+        <p>{% trans "建立第一個分帳活動，邀請成員一起記錄共同支出。" %}</p>
+        <a class="button button-secondary" href="{% url 'expenses:create_activity' %}">{% trans "開始建立" %}</a>
     </div>
     {% endif %}
 </section>

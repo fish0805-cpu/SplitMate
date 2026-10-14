@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "建立新活動｜SplitMate" %}{% endblock %}
+
+{% block content %}
+<section class="page-hero container page-hero-compact">
+    <a class="back-link" href="{% url 'expenses:home' %}">← {% trans "回到首頁" %}</a>
+    <p class="eyebrow">NEW ACTIVITY</p>
+    <h1>{% trans "建立新活動" %}</h1>
+    <p class="muted">{% trans "幫這次分帳活動取個名字，再加入一起分攤的成員。" %}</p>
+</section>
+
+<section class="section container form-layout">
+    <form method="post" class="panel form-panel" novalidate>
+        {% csrf_token %}
+
+        {% if activity_form.errors or member_formset.errors or member_formset.non_form_errors %}
+        <div class="error-summary" role="alert" tabindex="-1">
+            <strong>{% trans "請修正下方標示的欄位。" %}</strong>
+            {{ activity_form.non_field_errors }}{{ member_formset.non_form_errors }}
+        </div>
+        {% endif %}
+
+        <div class="form-section">
+            <div class="form-section-heading">
+                <span class="step-number">01</span>
+                <div>
+                    <h2>{% trans "活動資訊" %}</h2>
+                    <p>{% trans "這個名稱會顯示在首頁與分帳結果。" %}</p>
+                </div>
+            </div>
+            <div class="field-group">
+                <label for="{{ activity_form.name.id_for_label }}">{{ activity_form.name.label }}</label>
+                {{ activity_form.name }}
+                {% for error in activity_form.name.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+            </div>
+        </div>
+
+        <div class="form-divider"></div>
+
+        <div class="form-section" data-member-formset data-prefix="members" data-member-label="{% trans '成員' %}" data-remove-member-label="{% trans '移除成員' %}">
+            <div class="form-section-heading">
+                <span class="step-number">02</span>
+                <div>
+                    <h2>{% trans "活動成員" %}</h2>
+                    <p>{% trans "至少加入兩位成員，之後的付款者與分攤名單都會從這裡產生。" %}</p>
+                </div>
+            </div>
+
+            {{ member_formset.management_form }}
+            <div class="member-form-list" data-form-list>
+                {% for form in member_formset %}
+                <div class="member-form-row" data-form-row>
+                    <div class="field-group grow">
+                        <label for="{{ form.name.id_for_label }}">{% trans "成員" %} {{ forloop.counter }}</label>
+                        {{ form.name }}
+                        {% for error in form.name.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+                    </div>
+                    <button class="icon-button" type="button" data-remove-member aria-label="{% trans '移除成員' %} {{ forloop.counter }}">×</button>
+                    <span hidden>{{ form.DELETE }}</span>
+                </div>
+                {% endfor %}
+            </div>
+
+            <template data-empty-form>
+                <div class="member-form-row" data-form-row>
+                    <div class="field-group grow">
+                        <label for="{{ member_formset.empty_form.name.id_for_label }}">{% trans "新成員" %}</label>
+                        {{ member_formset.empty_form.name }}
+                    </div>
+                    <button class="icon-button" type="button" data-remove-member aria-label="{% trans '移除新成員' %}">×</button>
+                    <span hidden>{{ member_formset.empty_form.DELETE }}</span>
+                </div>
+            </template>
+
+            <button class="text-button" type="button" data-add-member>＋ {% trans "新增成員" %}</button>
+        </div>
+
+        <div class="form-actions">
+            <a class="button button-secondary" href="{% url 'expenses:home' %}">{% trans "取消" %}</a>
+            <button class="button button-primary" type="submit">{% trans "建立活動" %} <span aria-hidden="true">→</span></button>
+        </div>
+    </form>
+
+    <aside class="form-aside">
+        <p class="eyebrow">QUICK TIP</p>
+        <h2>{% trans "先把所有成員加進來" %}</h2>
+        <p>{% trans "建立活動後，新增支出時就能直接選擇誰付款、哪些人一起分攤。" %}</p>
+    </aside>
+</section>
+{% endblock %}
+

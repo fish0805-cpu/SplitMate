@@ -27,12 +27,48 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    const calculationDialog = document.querySelector("[data-calculation-dialog]");
+    if (calculationDialog) {
+        const trigger = document.querySelector("[data-calculation-trigger]");
+        const closeButton = calculationDialog.querySelector("[data-calculation-close]");
+        trigger.addEventListener("click", () => {
+            calculationDialog.showModal();
+            closeButton.focus();
+        });
+        closeButton.addEventListener("click", () => calculationDialog.close());
+        calculationDialog.addEventListener("click", (event) => {
+            if (event.target === calculationDialog) calculationDialog.close();
+        });
+        calculationDialog.addEventListener("close", () => trigger.focus());
+    }
+
+    const splitMethod = document.querySelector("[data-split-method]");
+    const customShares = document.querySelector("[data-custom-shares]");
+    if (splitMethod && customShares) {
+        const participantInputs = [...document.querySelectorAll('input[name="participants"]')];
+        const updateShares = () => {
+            const isCustom = splitMethod.querySelector('input[value="custom"]')?.checked;
+            customShares.hidden = !isCustom;
+            customShares.querySelectorAll("[data-custom-share-row]").forEach((row) => {
+                const selected = participantInputs.some((input) =>
+                    input.value === row.dataset.memberId && input.checked,
+                );
+                row.hidden = !selected;
+            });
+        };
+        splitMethod.addEventListener("change", updateShares);
+        participantInputs.forEach((input) => input.addEventListener("change", updateShares));
+        updateShares();
+    }
+
     const formset = document.querySelector("[data-member-formset]");
     if (!formset) return;
 
     const list = formset.querySelector("[data-form-list]");
     const template = formset.querySelector("[data-empty-form]");
     const totalInput = document.querySelector("#id_members-TOTAL_FORMS");
+    const memberLabel = formset.dataset.memberLabel;
+    const removeMemberLabel = formset.dataset.removeMemberLabel;
 
     const reindexRows = () => {
         const rows = [...list.querySelectorAll("[data-form-row]")];
@@ -49,7 +85,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
             const label = row.querySelector("label");
-            if (label) label.textContent = `成員 ${index + 1}`;
+            if (label) label.textContent = `${memberLabel} ${index + 1}`;
+            row.querySelector("[data-remove-member]")?.setAttribute(
+                "aria-label", `${removeMemberLabel} ${index + 1}`,
+            );
         });
         totalInput.value = rows.length;
     };
@@ -65,7 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (element.htmlFor) element.htmlFor = element.htmlFor.replaceAll("__prefix__", index);
             });
             list.append(fragment);
-            totalInput.value = index + 1;
+            reindexRows();
             list.lastElementChild.querySelector("input[type='text']")?.focus();
             return;
         }

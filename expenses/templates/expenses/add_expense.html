@@ -1,13 +1,14 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}新增支出｜{{ trip.name }}｜SplitMate{% endblock %}
+{% block title %}{% trans "新增支出" %}｜{{ activity.name }}｜SplitMate{% endblock %}
 
 {% block content %}
 <section class="page-hero container page-hero-compact">
-    <a class="back-link" href="{% url 'expenses:trip_detail' trip.pk %}">← 回到 {{ trip.name }}</a>
+    <a class="back-link" href="{% url 'expenses:activity_detail' activity.pk %}">← {% trans "回到" %} {{ activity.name }}</a>
     <p class="eyebrow">NEW EXPENSE</p>
-    <h1>新增支出</h1>
-    <p class="muted">記下誰先付款，以及哪些旅伴要一起分攤。</p>
+    <h1>{% trans "新增支出" %}</h1>
+    <p class="muted">{% trans "記下誰先付款，以及哪些成員要一起分攤。" %}</p>
 </section>
 
 <section class="section container form-layout">
@@ -15,7 +16,7 @@
         {% csrf_token %}
         {% if expense_form.errors %}
         <div class="error-summary" role="alert" tabindex="-1">
-            <strong>請修正下方標示的欄位。</strong>
+            <strong>{% trans "請修正下方標示的欄位。" %}</strong>
             {{ expense_form.non_field_errors }}
         </div>
         {% endif %}
@@ -24,8 +25,8 @@
             <div class="form-section-heading">
                 <span class="step-number">01</span>
                 <div>
-                    <h2>支出內容</h2>
-                    <p>輸入項目名稱與實際支付金額。</p>
+                    <h2>{% trans "支出內容" %}</h2>
+                    <p>{% trans "輸入項目名稱與實際支付金額。" %}</p>
                 </div>
             </div>
             <div class="field-grid">
@@ -48,8 +49,8 @@
             <div class="form-section-heading">
                 <span class="step-number">02</span>
                 <div>
-                    <h2>付款與分攤</h2>
-                    <p>第一版會在勾選的成員之間平均分攤。</p>
+                    <h2>{% trans "付款與分攤" %}</h2>
+                    <p>{% trans "選擇付款者，再決定平均分攤或填寫每人的金額。" %}</p>
                 </div>
             </div>
             <div class="field-group">
@@ -62,18 +63,38 @@
                 <div class="participant-grid">{{ expense_form.participants }}</div>
                 {% for error in expense_form.participants.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
             </fieldset>
+            <fieldset class="split-method-fieldset" data-split-method>
+                <legend>{{ expense_form.split_method.label }}</legend>
+                <div class="split-method-options">{{ expense_form.split_method }}</div>
+                {% for error in expense_form.split_method.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+            </fieldset>
+            <div class="custom-shares" data-custom-shares>
+                <div class="custom-shares-heading">
+                    <h3>{% trans "每人應負擔金額" %}</h3>
+                    <p>{% trans "只需填寫已勾選成員，合計須等於支出金額。" %}</p>
+                </div>
+                <div class="custom-share-list">
+                    {% for row in expense_form.share_rows %}
+                    <div class="custom-share-row field-group" data-custom-share-row data-member-id="{{ row.member.pk }}">
+                        <label for="{{ row.field.id_for_label }}">{{ row.member.name }}</label>
+                        <div class="money-input"><span>NT$</span>{{ row.field }}</div>
+                        {% for error in row.field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
 
         <div class="form-actions">
-            <a class="button button-secondary" href="{% url 'expenses:trip_detail' trip.pk %}">取消</a>
-            <button class="button button-primary" type="submit">儲存支出 <span aria-hidden="true">→</span></button>
+            <a class="button button-secondary" href="{% url 'expenses:activity_detail' activity.pk %}">{% trans "取消" %}</a>
+            <button class="button button-primary" type="submit">{% trans "儲存支出" %} <span aria-hidden="true">→</span></button>
         </div>
     </form>
 
     <aside class="form-aside">
-        <p class="eyebrow">EQUAL SPLIT</p>
-        <h2>這筆費用會平均分攤</h2>
-        <p>若金額無法整除，SplitMate 會以最小貨幣單位分配餘額，確保總額完全一致。</p>
+        <p class="eyebrow">FAIR SPLIT</p>
+        <h2>{% trans "每筆支出，都能照實際情況分攤" %}</h2>
+        <p>{% trans "平均分攤適合共同消費；各自餐點價格不同時，改選自訂金額即可。" %}</p>
     </aside>
 </section>
 {% endblock %}

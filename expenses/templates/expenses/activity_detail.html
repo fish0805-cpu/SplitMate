@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% load humanize i18n %}
+
+{% block title %}{{ activity.name }}｜SplitMate{% endblock %}
+
+{% block content %}
+<section class="activity-banner">
+    <div class="container">
+        <a class="back-link" href="{% url 'expenses:home' %}">← {% trans "回到所有活動" %}</a>
+        <div class="activity-banner-grid">
+            <div>
+                <p class="eyebrow">ACTIVITY OVERVIEW</p>
+                <h1>{{ activity.name }}</h1>
+                <p class="muted">{% blocktrans count count=activity.members.count %}{{ count }} 位成員{% plural %}{{ count }} 位成員{% endblocktrans %}</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section container activity-layout">
+    <div class="activity-heading section-heading">
+        <div>
+            <p class="eyebrow">EXPENSES</p>
+            <h2>{% trans "最近支出" %}</h2>
+        </div>
+        {% if expense_summaries %}
+        <a class="activity-add-action button button-primary" href="{% url 'expenses:add_expense' activity.pk %}">＋ {% trans "新增支出" %}</a>
+        {% endif %}
+    </div>
+    <div class="activity-main">
+        {% if expense_summaries %}
+        <div class="expense-list">
+            {% for summary in expense_summaries %}
+            <article class="expense-card">
+                <div class="expense-card-main">
+                    <div class="expense-title-row">
+                        <div class="expense-icon" aria-hidden="true">↗</div>
+                        <div>
+                            <h3>{{ summary.expense.title }}</h3>
+                            <p>{% blocktrans with payer=summary.expense.paid_by.name %}由 {{ payer }} 付款{% endblocktrans %}</p>
+                        </div>
+                    </div>
+                    <p class="expense-amount">NT$ {{ summary.expense.amount|floatformat:"-2"|intcomma:False }}</p>
+                </div>
+                <div class="expense-meta">
+                    <div>
+                        <span>{% trans "分攤成員" %}</span>
+                        <strong>{{ summary.participant_names }}</strong>
+                    </div>
+                    <div>
+                        <span>{% if summary.custom_shares %}{% trans "自訂分攤" %}{% else %}{% trans "平均負擔" %}{% endif %}</span>
+                        {% if summary.custom_shares %}
+                        <div class="expense-share-list">
+                            {% for share in summary.custom_shares %}
+                            <strong>{{ share.member.name }}{% trans "：" %}NT$ {{ share.amount|floatformat:"-2"|intcomma:False }}</strong>
+                            {% endfor %}
+                        </div>
+                        {% elif summary.is_equal %}
+                        <strong>{% trans "每人" %} NT$ {{ summary.min_share|floatformat:"-2"|intcomma:False }}</strong>
+                        {% else %}
+                        <strong>NT$ {{ summary.min_share|floatformat:"-2"|intcomma:False }} – {{ summary.max_share|floatformat:"-2"|intcomma:False }}</strong>
+                        <small>{% trans "餘額依最小貨幣單位分配" %}</small>
+                        {% endif %}
+                    </div>
+                    <form id="delete-expense-{{ summary.expense.pk }}" method="post" action="{% url 'expenses:delete_expense' activity.pk summary.expense.pk %}">
+                        {% csrf_token %}
+                        <button class="delete-button" type="button" aria-label="{% blocktrans with title=summary.expense.title %}刪除 {{ title }}{% endblocktrans %}" data-delete-trigger data-expense-title="{{ summary.expense.title }}">{% trans "刪除" %}</button>
+                    </form>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state compact-empty">
+            <div class="empty-icon" aria-hidden="true">＋</div>
+            <h3>{% trans "還沒有支出" %}</h3>
+            <p>{% trans "新增第一筆共同支出，SplitMate 就會開始幫大家計算。" %}</p>
+            <a class="button button-primary" href="{% url 'expenses:add_expense' activity.pk %}">{% trans "新增第一筆支出" %}</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <aside class="activity-sidebar">
+        <div class="panel">
+            <p class="eyebrow">MEMBERS</p>
+            <h2>{% trans "活動成員" %}</h2>
+            <div class="member-stack">
+                {% for member in activity.members.all %}
+                <div class="member-row">
+                    <span class="avatar">{{ member.name|first|upper }}</span>
+                    <strong>{{ member.name }}</strong>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="total-card">
+            <span>{% trans "活動總支出" %}</span>
+            <strong>NT$ {{ total_expense|floatformat:"-2"|intcomma:False }}</strong>
+            <small>{% blocktrans count count=expense_summaries|length %}{{ count }} 筆支出{% plural %}{{ count }} 筆支出{% endblocktrans %}</small>
+        </div>
+        <a class="settlement-cta" href="{% url 'expenses:settlement' activity.pk %}">
+            <span>
+                <small>{% trans "大家最後怎麼付？" %}</small>
+                <strong>{% trans "查看分帳結果" %}</strong>
+            </span>
+            <span aria-hidden="true">→</span>
+        </a>
+    </aside>
+</section>
+{% if expense_summaries %}
+<dialog id="delete-expense-dialog" class="delete-dialog" aria-labelledby="delete-expense-title" aria-describedby="delete-expense-description" data-delete-dialog>
+    <div class="delete-dialog-content">
+        <div class="delete-dialog-icon" aria-hidden="true">!</div>
+        <p class="eyebrow">REMOVE EXPENSE</p>
+        <h2 id="delete-expense-title">{% trans "刪除這筆支出？" %}</h2>
+        <p id="delete-expense-description">{% trans "「" %}<strong data-delete-expense-name></strong>{% trans "」將從活動中移除，分帳結果也會重新計算。此操作無法復原。" %}</p>
+        <div class="delete-dialog-actions">
+            <button class="button button-secondary" type="button" data-delete-cancel autofocus>{% trans "取消" %}</button>
+            <button class="button button-danger" type="submit" data-delete-confirm>{% trans "確認刪除" %}</button>
+        </div>
+    </div>
+</dialog>
+{% endif %}
+{% endblock %}
+

@@ -1,15 +1,15 @@
 {% extends "base.html" %}
-{% load humanize %}
+{% load humanize i18n %}
 
-{% block title %}分帳結果｜{{ trip.name }}｜SplitMate{% endblock %}
+{% block title %}{% trans "分帳結果" %}｜{{ activity.name }}｜SplitMate{% endblock %}
 
 {% block content %}
 <section class="settlement-hero">
     <div class="container">
-        <a class="back-link" href="{% url 'expenses:trip_detail' trip.pk %}">← 回到 {{ trip.name }}</a>
+        <a class="back-link" href="{% url 'expenses:activity_detail' activity.pk %}">← {% trans "回到" %} {{ activity.name }}</a>
         <p class="eyebrow">SETTLEMENT</p>
-        <h1>把帳算清楚，<br><span>把回憶留下。</span></h1>
-        <p>每一分錢都精確分配，照著下方結果付款即可。</p>
+        <h1>{% trans "把帳算清楚，" %}<br><span>{% trans "把回憶留下。" %}</span></h1>
+        <p>{% trans "每一分錢都精確分配，照著下方結果付款即可。" %}</p>
     </div>
 </section>
 
@@ -17,24 +17,24 @@
     <div class="section-heading">
         <div>
             <p class="eyebrow">MEMBER BALANCES</p>
-            <h2>每位成員的帳目</h2>
+            <h2>{% trans "每位成員的帳目" %}</h2>
         </div>
     </div>
     <div class="balance-grid">
         {% for row in balance_rows %}
-        <article class="balance-card{% if row.status == '應收款' %} positive{% elif row.status == '應付款' %} negative{% endif %}">
+        <article class="balance-card{% if row.status_code == 'positive' %} positive{% elif row.status_code == 'negative' %} negative{% endif %}">
             <div class="balance-person">
                 <span class="avatar">{{ row.item.member.name|first|upper }}</span>
                 <h3>{{ row.item.member.name }}</h3>
             </div>
             <div class="balance-numbers">
-                <span>實付 NT$ {{ row.item.paid|floatformat:"-2"|intcomma:False }}</span>
-                <span>應負擔 NT$ {{ row.item.should_pay|floatformat:"-2"|intcomma:False }}</span>
+                <span>{% trans "實付" %} NT$ {{ row.item.paid|floatformat:"-2"|intcomma:False }}</span>
+                <span>{% trans "應負擔" %} NT$ {{ row.item.should_pay|floatformat:"-2"|intcomma:False }}</span>
             </div>
             <div class="balance-status">
                 <small>{{ row.status }}</small>
-                {% if row.status == "已結清" %}
-                <strong>已結清 NT$ 0</strong>
+                {% if row.status_code == "settled" %}
+                <strong>{% trans "已結清" %} NT$ 0</strong>
                 {% else %}
                 <strong>{{ row.status }} NT$ {{ row.status_amount|floatformat:"-2"|intcomma:False }}</strong>
                 {% endif %}
@@ -49,8 +49,11 @@
         <div class="section-heading">
             <div>
                 <p class="eyebrow">WHO PAYS WHOM</p>
-                <h2>建議付款方式</h2>
+                <h2>{% trans "建議付款方式" %}</h2>
             </div>
+            {% if has_expenses %}
+            <button class="button button-secondary calculation-trigger" type="button" aria-haspopup="dialog" aria-controls="calculation-dialog" data-calculation-trigger>{% trans "計算明細" %} <span aria-hidden="true">↗</span></button>
+            {% endif %}
         </div>
 
         {% if settlements %}
@@ -63,7 +66,7 @@
                     <span class="avatar creditor-avatar">{{ transfer.creditor.name|first|upper }}</span>
                 </div>
                 <div>
-                    <small>{{ transfer.debtor.name }} 付款給 {{ transfer.creditor.name }}</small>
+                    <small>{% blocktrans with debtor=transfer.debtor.name creditor=transfer.creditor.name %}{{ debtor }} 付款給 {{ creditor }}{% endblocktrans %}</small>
                     <strong>NT$ {{ transfer.amount|floatformat:"-2"|intcomma:False }}</strong>
                 </div>
             </article>
@@ -72,18 +75,87 @@
         {% elif not has_expenses %}
         <div class="empty-state">
             <div class="empty-icon" aria-hidden="true">＝</div>
-            <h3>尚無可結算支出</h3>
-            <p>新增支出後，這裡會自動整理每個人的應付與應收款。</p>
-            <a class="button button-secondary" href="{% url 'expenses:add_expense' trip.pk %}">新增支出</a>
+            <h3>{% trans "尚無可結算支出" %}</h3>
+            <p>{% trans "新增支出後，這裡會自動整理每個人的應付與應收款。" %}</p>
+            <a class="button button-secondary" href="{% url 'expenses:add_expense' activity.pk %}">{% trans "新增支出" %}</a>
         </div>
         {% else %}
         <div class="empty-state">
             <div class="empty-icon" aria-hidden="true">✓</div>
-            <h3>目前不需要任何轉帳</h3>
-            <p>所有人的 Balance 都已歸零，這趟旅程已經結清。</p>
+            <h3>{% trans "目前不需要任何轉帳" %}</h3>
+            <p>{% trans "所有人的 Balance 都已歸零，這個活動已經結清。" %}</p>
         </div>
         {% endif %}
     </div>
 </section>
+{% if has_expenses %}
+<dialog id="calculation-dialog" class="calculation-dialog" aria-labelledby="calculation-title" aria-describedby="calculation-intro" data-calculation-dialog>
+    <div class="calculation-dialog-content">
+        <div class="calculation-dialog-header">
+            <div>
+                <p class="eyebrow">HOW IT ADDS UP</p>
+                <h2 id="calculation-title">{% trans "計算明細" %}</h2>
+            </div>
+            <button class="calculation-close" type="button" aria-label="{% trans '關閉計算明細' %}" data-calculation-close>×</button>
+        </div>
+        <p id="calculation-intro" class="calculation-intro">{% trans "先計算每筆支出的個人分攤，再將整個活動中每人的實付與應負擔相減。" %}</p>
+
+        <section class="calculation-block" aria-labelledby="calculation-expenses-title">
+            <h3 id="calculation-expenses-title">{% trans "每筆支出與分攤" %}</h3>
+            <div class="calculation-expense-list">
+                {% for item in calculation_expenses %}
+                <article class="calculation-expense">
+                    <div class="calculation-expense-heading">
+                        <strong>{{ item.expense.title }}</strong>
+                        <strong>NT$ {{ item.expense.amount|floatformat:"-2"|intcomma:False }}</strong>
+                    </div>
+                    <p>{% blocktrans with payer=item.expense.paid_by.name %}由 {{ payer }} 付款{% endblocktrans %} · {{ item.expense.get_split_method_display }}</p>
+                    <ul>
+                        {% for share in item.shares %}
+                        <li>{{ share.member.name }}{% trans "：" %}NT$ {{ share.amount|floatformat:"-2"|intcomma:False }}</li>
+                        {% endfor %}
+                    </ul>
+                </article>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="calculation-block" aria-labelledby="calculation-balances-title">
+            <h3 id="calculation-balances-title">{% trans "每人淨額" %}</h3>
+            <p class="calculation-formula">{% trans "實付 − 應負擔 = 淨額" %}</p>
+            <div class="calculation-balance-list">
+                {% for row in balance_rows %}
+                <div class="calculation-balance-row">
+                    <strong>{{ row.item.member.name }}</strong>
+                    <span>NT$ {{ row.item.paid|floatformat:"-2"|intcomma:False }} − NT$ {{ row.item.should_pay|floatformat:"-2"|intcomma:False }} = <b>{{ row.status }} NT$ {{ row.status_amount|floatformat:"-2"|intcomma:False }}</b></span>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="calculation-block" aria-labelledby="calculation-direct-title">
+            <h3 id="calculation-direct-title">{% trans "依支出計算：誰該付給誰" %}</h3>
+            <p class="calculation-hint">{% trans "已抵銷同兩人之間的反向代墊，尚未重新安排付款對象。" %}</p>
+            {% if direct_payments %}
+            <div class="calculation-payment-list">
+                {% for payment in direct_payments %}
+                <div class="calculation-payment-row">
+                    <strong>{{ payment.debtor.name }} → {{ payment.creditor.name }}</strong>
+                    <span>NT$ {{ payment.amount|floatformat:"-2"|intcomma:False }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="calculation-no-payments">{% trans "沒有需要代付的金額" %}</p>
+            {% endif %}
+        </section>
+
+        <section class="calculation-block calculation-note" aria-labelledby="calculation-transfers-title">
+            <h3 id="calculation-transfers-title">{% trans "為什麼付款對象可能不同？" %}</h3>
+            <p>{% trans "下方建議是將全活動應付款與應收款的淨額配對，讓每個人的帳目歸零；付款對象不一定是原本替你支付某筆支出的人。" %}</p>
+        </section>
+    </div>
+</dialog>
+{% endif %}
 {% endblock %}
 
