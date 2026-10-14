@@ -1,0 +1,379 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "SplitMate 多人活動分帳工具"
+msgstr "SplitMate group expense sharing"
+
+msgid "SplitMate 首頁"
+msgstr "SplitMate home"
+
+msgid "SplitMate｜一起活動，輕鬆分帳"
+msgstr "SplitMate | Split expenses together"
+
+msgid "一起記錄支出，簡單完成分帳。"
+msgstr "Track expenses together and settle up easily."
+
+msgid "建立新活動"
+msgstr "Create new activity"
+
+msgid "建立新活動｜SplitMate"
+msgstr "Create a new activity | SplitMate"
+
+msgid "最新活動"
+msgstr "Latest activity"
+
+msgid "建立第一個活動"
+msgstr "Create your first activity"
+
+msgid "目前的活動"
+msgstr "Your activities"
+
+msgid "總支出"
+msgstr "Total expenses"
+
+msgid "查看活動"
+msgstr "View activity"
+
+msgid "還沒有活動"
+msgstr "No activities yet"
+
+msgid "建立第一個分帳活動，邀請成員一起記錄共同支出。"
+msgstr "Create an activity and add members to track shared expenses."
+
+msgid "開始建立"
+msgstr "Get started"
+
+msgid "%(count)s 位成員"
+msgid_plural "%(count)s 位成員"
+msgstr[0] "%(count)s member"
+msgstr[1] "%(count)s members"
+
+msgid "%(count)s 筆共同支出"
+msgid_plural "%(count)s 筆共同支出"
+msgstr[0] "%(count)s shared expense"
+msgstr[1] "%(count)s shared expenses"
+
+msgid "%(count)s 個活動"
+msgid_plural "%(count)s 個活動"
+msgstr[0] "%(count)s activity"
+msgstr[1] "%(count)s activities"
+
+msgid "%(count)s 筆支出"
+msgid_plural "%(count)s 筆支出"
+msgstr[0] "%(count)s expense"
+msgstr[1] "%(count)s expenses"
+
+msgid "回到首頁"
+msgstr "Back to home"
+
+msgid "回到所有活動"
+msgstr "Back to all activities"
+
+msgid "回到"
+msgstr "Back to"
+
+msgid "幫這次分帳活動取個名字，再加入一起分攤的成員。"
+msgstr "Name this activity and add the people who will share its costs."
+
+msgid "請修正下方標示的欄位。"
+msgstr "Please correct the highlighted fields."
+
+msgid "活動資訊"
+msgstr "Activity details"
+
+msgid "這個名稱會顯示在首頁與分帳結果。"
+msgstr "This name appears on the home page and settlement results."
+
+msgid "活動成員"
+msgstr "Activity members"
+
+msgid "至少加入兩位成員，之後的付款者與分攤名單都會從這裡產生。"
+msgstr "Add at least two members. You will choose payers and participants from this list."
+
+msgid "成員"
+msgstr "Member"
+
+msgid "移除成員"
+msgstr "Remove member"
+
+msgid "新成員"
+msgstr "New member"
+
+msgid "移除新成員"
+msgstr "Remove new member"
+
+msgid "新增成員"
+msgstr "Add member"
+
+msgid "取消"
+msgstr "Cancel"
+
+msgid "建立活動"
+msgstr "Create activity"
+
+msgid "先把所有成員加進來"
+msgstr "Add everyone first"
+
+msgid "建立活動後，新增支出時就能直接選擇誰付款、哪些人一起分攤。"
+msgstr "Once the activity is created, you can choose who paid and who shares each expense."
+
+msgid "活動名稱"
+msgstr "Activity name"
+
+msgid "例如：週五晚餐、東京旅行"
+msgstr "For example: Friday dinner or Tokyo trip"
+
+msgid "成員名稱"
+msgstr "Member name"
+
+msgid "輸入成員名稱"
+msgstr "Enter member name"
+
+msgid "至少需要 2 位成員。"
+msgstr "At least 2 members are required."
+
+msgid "成員名稱不可重複。"
+msgstr "Member names must be unique."
+
+msgid "請輸入活動名稱。"
+msgstr "Enter an activity name."
+
+msgid "請輸入成員名稱。"
+msgstr "Enter a member name."
+
+msgid "最近支出"
+msgstr "Recent expenses"
+
+msgid "活動總支出"
+msgstr "Activity total"
+
+msgid "新增支出"
+msgstr "Add expense"
+
+msgid "由 %(payer)s 付款"
+msgstr "Paid by %(payer)s"
+
+msgid "分攤成員"
+msgstr "Members sharing"
+
+msgid "平均負擔"
+msgstr "Share per member"
+
+msgid "每人"
+msgstr "Per person"
+
+msgid "餘額依最小貨幣單位分配"
+msgstr "Remainder allocated by the smallest currency unit"
+
+msgid "刪除 %(title)s"
+msgstr "Delete %(title)s"
+
+msgid "刪除"
+msgstr "Delete"
+
+msgid "還沒有支出"
+msgstr "No expenses yet"
+
+msgid "新增第一筆共同支出，SplitMate 就會開始幫大家計算。"
+msgstr "Add your first shared expense and SplitMate will start calculating."
+
+msgid "新增第一筆支出"
+msgstr "Add the first expense"
+
+msgid "大家最後怎麼付？"
+msgstr "Who owes whom?"
+
+msgid "查看分帳結果"
+msgstr "View settlement"
+
+msgid "刪除這筆支出？"
+msgstr "Delete this expense?"
+
+msgid "「"
+msgstr "“"
+
+msgid "」將從活動中移除，分帳結果也會重新計算。此操作無法復原。"
+msgstr "” will be removed from this activity, and balances will be recalculated. This cannot be undone."
+
+msgid "確認刪除"
+msgstr "Delete expense"
+
+msgid "支出名稱"
+msgstr "Expense name"
+
+msgid "金額"
+msgstr "Amount"
+
+msgid "付款者"
+msgstr "Payer"
+
+msgid "參與分攤成員"
+msgstr "Members sharing this expense"
+
+msgid "例如：晚餐"
+msgstr "For example: dinner"
+
+msgid "至少選擇一位參與成員。"
+msgstr "Select at least one member to share this expense."
+
+msgid "金額必須大於 0。"
+msgstr "Amount must be greater than zero."
+
+msgid "平均分攤"
+msgstr "Equal split"
+
+msgid "自訂金額"
+msgstr "Custom amounts"
+
+msgid "分攤方式"
+msgstr "Split method"
+
+msgid "請填寫每位分攤成員的金額。"
+msgstr "Enter an amount for each selected member."
+
+msgid "每位分攤成員的金額必須大於 0。"
+msgstr "Each selected member's amount must be greater than zero."
+
+msgid "每人分攤金額加總必須等於支出金額。"
+msgstr "The member amounts must add up to the expense total."
+
+msgid "請輸入支出名稱。"
+msgstr "Enter an expense name."
+
+msgid "付款者必須屬於這個活動。"
+msgstr "The payer must belong to this activity."
+
+msgid "參與分攤的成員必須屬於這個活動。"
+msgstr "Members sharing the expense must belong to this activity."
+
+msgid "記下誰先付款，以及哪些成員要一起分攤。"
+msgstr "Record who paid and which members share the expense."
+
+msgid "支出內容"
+msgstr "Expense details"
+
+msgid "輸入項目名稱與實際支付金額。"
+msgstr "Enter a description and the amount paid."
+
+msgid "付款與分攤"
+msgstr "Payment and sharing"
+
+msgid "第一版會在勾選的成員之間平均分攤。"
+msgstr "The expense is split equally among selected members."
+
+msgid "選擇付款者，再決定平均分攤或填寫每人的金額。"
+msgstr "Choose who paid, then split equally or enter each person's amount."
+
+msgid "每人應負擔金額"
+msgstr "Amount per member"
+
+msgid "只需填寫已勾選成員，合計須等於支出金額。"
+msgstr "Enter amounts for selected members only. They must add up to the expense total."
+
+msgid "每筆支出，都能照實際情況分攤"
+msgstr "Split each expense the way it was shared"
+
+msgid "平均分攤適合共同消費；各自餐點價格不同時，改選自訂金額即可。"
+msgstr "Split shared purchases equally, or use custom amounts when each meal costs a different amount."
+
+msgid "自訂分攤"
+msgstr "Custom split"
+
+msgid "："
+msgstr ": "
+
+msgid "儲存支出"
+msgstr "Save expense"
+
+msgid "這筆費用會平均分攤"
+msgstr "This expense is split equally"
+
+msgid "若金額無法整除，SplitMate 會以最小貨幣單位分配餘額，確保總額完全一致。"
+msgstr "If the amount cannot be divided evenly, SplitMate allocates the remainder by the smallest currency unit."
+
+msgid "分帳結果"
+msgstr "Settlement"
+
+msgid "把帳算清楚，"
+msgstr "Settle the bill,"
+
+msgid "把回憶留下。"
+msgstr "keep the memories."
+
+msgid "每一分錢都精確分配，照著下方結果付款即可。"
+msgstr "Every cent is accounted for. Follow the payments below to settle up."
+
+msgid "每位成員的帳目"
+msgstr "Member balances"
+
+msgid "實付"
+msgstr "Paid"
+
+msgid "應負擔"
+msgstr "Owes"
+
+msgid "應收款"
+msgstr "To receive"
+
+msgid "應付款"
+msgstr "To pay"
+
+msgid "已結清"
+msgstr "Settled"
+
+msgid "建議付款方式"
+msgstr "Suggested payments"
+
+msgid "計算明細"
+msgstr "Calculation details"
+
+msgid "："
+msgstr ": "
+
+msgid "關閉計算明細"
+msgstr "Close calculation details"
+
+msgid "先計算每筆支出的個人分攤，再將整個活動中每人的實付與應負擔相減。"
+msgstr "First calculate each person's share of every expense, then subtract what each person owes from what they paid across the activity."
+
+msgid "每筆支出與分攤"
+msgstr "Expenses and shares"
+
+msgid "每人淨額"
+msgstr "Net balance per member"
+
+msgid "依支出計算：誰該付給誰"
+msgstr "By expense: who owes whom"
+
+msgid "已抵銷同兩人之間的反向代墊，尚未重新安排付款對象。"
+msgstr "Amounts paid on each other's behalf have been offset between the same two people; payment recipients have not been reassigned."
+
+msgid "沒有需要代付的金額"
+msgstr "No payments owed to another member"
+
+msgid "實付 − 應負擔 = 淨額"
+msgstr "Paid − owed = net balance"
+
+msgid "為什麼付款對象可能不同？"
+msgstr "Why might the payment recipient be different?"
+
+msgid "下方建議是將全活動應付款與應收款的淨額配對，讓每個人的帳目歸零；付款對象不一定是原本替你支付某筆支出的人。"
+msgstr "The suggestions match net amounts owed and due across the whole activity to bring everyone's balance to zero. The recipient may not be the person who paid for a particular expense on your behalf."
+
+msgid "%(debtor)s 付款給 %(creditor)s"
+msgstr "%(debtor)s pays %(creditor)s"
+
+msgid "尚無可結算支出"
+msgstr "No expenses to settle yet"
+
+msgid "新增支出後，這裡會自動整理每個人的應付與應收款。"
+msgstr "Add expenses to see what each member owes and is owed."
+
+msgid "目前不需要任何轉帳"
+msgstr "No transfers needed"
+
+msgid "所有人的 Balance 都已歸零，這個活動已經結清。"
+msgstr "All balances are zero. This activity is settled."
+
+msgid "、"
+msgstr ", "
