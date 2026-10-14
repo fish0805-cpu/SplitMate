@@ -140,6 +140,19 @@ class TripDetailAndDeleteTests(TestCase):
             reverse("expenses:delete_expense", args=[self.trip.pk, expense.pk]),
         )
 
+    def test_delete_control_has_accessible_page_confirmation(self):
+        expense = self._create_expense(title="晚餐")
+
+        response = self.client.get(self.detail_url)
+
+        self.assertContains(response, 'id="delete-expense-dialog"')
+        self.assertContains(response, 'aria-labelledby="delete-expense-title"')
+        self.assertContains(response, 'aria-describedby="delete-expense-description"')
+        self.assertContains(response, 'data-delete-trigger data-expense-title="晚餐"')
+        self.assertContains(response, f'id="delete-expense-{expense.pk}"')
+        self.assertContains(response, "取消")
+        self.assertContains(response, "確認刪除")
+
     def test_non_divisible_expense_shows_conserved_share_range(self):
         self._create_expense(title="測試零錢", amount="0.01")
 

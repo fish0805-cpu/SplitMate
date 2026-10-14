@@ -293,6 +293,25 @@ a { color: inherit; }
 .expense-meta span, .expense-meta small { display: block; color: var(--muted); font-size: 0.76rem; }
 .expense-meta strong { display: block; font-size: 0.88rem; }
 .delete-button { border: 0; background: transparent; color: var(--danger); font: inherit; font-size: 0.84rem; font-weight: 780; cursor: pointer; }
+.delete-dialog {
+    width: min(440px, calc(100% - 32px));
+    max-height: calc(100% - 32px);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    color: var(--ink);
+    padding: 0;
+    box-shadow: 0 30px 90px rgba(15, 32, 24, 0.24);
+}
+.delete-dialog::backdrop { background: rgba(16, 31, 24, 0.56); backdrop-filter: blur(4px); }
+.delete-dialog-content { padding: clamp(24px, 5vw, 36px); }
+.delete-dialog-icon { display: grid; width: 48px; height: 48px; margin-bottom: 24px; place-items: center; border-radius: 16px; background: #f9e8e5; color: var(--danger); font-size: 1.55rem; font-weight: 850; }
+.delete-dialog h2 { margin: 0 0 14px; font-size: clamp(1.65rem, 5vw, 2rem); line-height: 1.2; letter-spacing: -0.04em; }
+.delete-dialog p:last-of-type { margin: 0; color: var(--muted); line-height: 1.8; }
+.delete-dialog p strong { color: var(--ink); overflow-wrap: anywhere; }
+.delete-dialog-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 10px; margin-top: 32px; }
+.button-danger { background: var(--danger); color: white; }
+.button-danger:hover { background: #8e3634; }
 .compact-empty { padding: 48px 20px; }
 .trip-sidebar { display: grid; gap: 16px; }
 .trip-sidebar .panel h2 { margin-top: 0; }
@@ -367,6 +386,7 @@ a { color: inherit; }
     .total-card { min-width: 0; }
     .expense-card-main { align-items: flex-start; flex-direction: column; }
     .expense-meta { grid-template-columns: 1fr; }
+    .delete-dialog-actions .button { flex: 1; }
     .trip-sidebar { grid-template-columns: 1fr; }
     .balance-grid { grid-template-columns: 1fr; }
     .transfer-card { align-items: stretch; flex-direction: column; }

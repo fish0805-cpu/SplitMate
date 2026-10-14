@@ -1,11 +1,31 @@
 document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll("[data-confirm-delete]").forEach((form) => {
-        form.addEventListener("submit", (event) => {
-            if (!window.confirm("確定要刪除這筆支出嗎？")) {
-                event.preventDefault();
-            }
+    const deleteDialog = document.querySelector("[data-delete-dialog]");
+    if (deleteDialog) {
+        const expenseName = deleteDialog.querySelector("[data-delete-expense-name]");
+        const cancelButton = deleteDialog.querySelector("[data-delete-cancel]");
+        const confirmButton = deleteDialog.querySelector("[data-delete-confirm]");
+        let triggerButton = null;
+
+        document.querySelectorAll("[data-delete-trigger]").forEach((button) => {
+            button.addEventListener("click", () => {
+                triggerButton = button;
+                expenseName.textContent = button.dataset.expenseTitle;
+                confirmButton.setAttribute("form", button.closest("form").id);
+                deleteDialog.showModal();
+                cancelButton.focus();
+            });
         });
-    });
+
+        cancelButton.addEventListener("click", () => deleteDialog.close());
+        deleteDialog.addEventListener("click", (event) => {
+            if (event.target === deleteDialog) deleteDialog.close();
+        });
+        deleteDialog.addEventListener("close", () => {
+            confirmButton.removeAttribute("form");
+            triggerButton?.focus();
+            triggerButton = null;
+        });
+    }
 
     const formset = document.querySelector("[data-member-formset]");
     if (!formset) return;
