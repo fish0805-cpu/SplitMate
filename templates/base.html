@@ -1,0 +1,29 @@
+{% load static %}
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="SplitMate 多人旅程分帳工具">
+    <title>{% block title %}SplitMate{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'expenses/css/style.css' %}">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container nav-shell">
+            <a class="brand" href="{% url 'expenses:home' %}" aria-label="SplitMate 首頁">
+                <span class="brand-mark" aria-hidden="true">S</span>
+                <span>SplitMate</span>
+            </a>
+            <a class="nav-action" href="/trips/new/">建立旅程</a>
+        </div>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="site-footer">
+        <div class="container">Split expenses. Keep the good memories.</div>
+    </footer>
+</body>
+</html>
+

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}SplitMate｜一起旅行，輕鬆分帳{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="container hero-grid">
+        <div class="hero-copy">
+            <p class="eyebrow">TRAVEL LIGHTER, TOGETHER</p>
+            <h1>Split expenses.<br><span>Not friendships.</span></h1>
+            <p class="hero-lead">一起記錄支出，<br>簡單完成分帳。</p>
+            <a class="button button-primary" href="/trips/new/">建立新旅程 <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+            <div class="hero-card hero-card-main">
+                <span class="hero-card-label">本次旅程</span>
+                <strong>Tokyo Trip</strong>
+                <span class="hero-card-amount">NT$ 11,000</span>
+            </div>
+            <div class="hero-card hero-card-note">4 位旅伴<br>3 筆共同支出</div>
+        </div>
+    </div>
+</section>
+
+<section class="section container" aria-labelledby="trips-title">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">YOUR TRIPS</p>
+            <h2 id="trips-title">目前的旅程</h2>
+        </div>
+        {% if trips %}<span class="count-badge">{{ trips|length }} 個旅程</span>{% endif %}
+    </div>
+
+    {% if trips %}
+    <div class="card-grid">
+        {% for trip in trips %}
+        <article class="trip-card">
+            <div class="trip-card-top">
+                <span class="trip-icon" aria-hidden="true">✦</span>
+                <span class="member-count">{{ trip.member_count }} 位成員</span>
+            </div>
+            <h3>{{ trip.name }}</h3>
+            <p class="muted">總支出</p>
+            <p class="money">NT$ {{ trip.total_expense|floatformat:"-2"|intcomma }}</p>
+            <a class="card-link" href="{% url 'expenses:trip_detail' trip.pk %}">查看旅程 <span aria-hidden="true">→</span></a>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon" aria-hidden="true">＋</div>
+        <h3>還沒有旅程</h3>
+        <p>建立第一個旅程，邀請旅伴一起記錄共同支出。</p>
+        <a class="button button-secondary" href="/trips/new/">開始建立</a>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}
+

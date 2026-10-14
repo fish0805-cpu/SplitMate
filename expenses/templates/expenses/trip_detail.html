@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}{{ trip.name }}｜SplitMate{% endblock %}
+
+{% block content %}
+<section class="page-hero container">
+    <a class="back-link" href="{% url 'expenses:home' %}">← 回到所有旅程</a>
+    <p class="eyebrow">TRIP OVERVIEW</p>
+    <h1>{{ trip.name }}</h1>
+    <p class="muted">{{ trip.members.count }} 位成員</p>
+</section>
+<section class="section container">
+    <div class="panel">
+        <div class="section-heading">
+            <h2>旅程成員</h2>
+        </div>
+        <div class="member-list">
+            {% for member in trip.members.all %}
+            <span class="member-chip">{{ member.name }}</span>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
