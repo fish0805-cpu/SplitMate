@@ -1,6 +1,6 @@
 # SplitMate
 
-SplitMate 是一個以 Django 建立的旅行分帳 MVP。你可以建立旅程與旅伴、記錄每筆共同支出，並取得精確到分的成員餘額與建議付款方式。
+SplitMate 是一個多人分帳的網頁。你可以建立分帳活動（例如聚餐或旅行）、加入成員、記錄共同支出，並取得精確到分的成員餘額與建議付款方式。
 
 ## 系統需求
 
@@ -11,22 +11,28 @@ SplitMate 是一個以 Django 建立的旅行分帳 MVP。你可以建立旅程�
 
 ```powershell
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
+.venv\Scripts\Activate
 pip install -r requirements.txt
 python manage.py migrate
 ```
 
-SplitMate 使用專案目錄中的 SQLite 資料庫 `db.sqlite3`，不需要另外安裝資料庫服務。此檔案已被 Git 忽略。
+SplitMate 使用專案目錄中的 SQLite 資料庫 `db.sqlite3`，不需要另外安裝資料庫服務。
 
 ## 執行與測試
 
 啟動開發伺服器：
 
 ```powershell
-python manage.py runserver
+python manage.py runserver 8500
 ```
 
-瀏覽器開啟 `http://127.0.0.1:8000/`。
+瀏覽器開啟 `http://127.0.0.1:8500/`。
+
+右上角的 `EN`／`中文` 按鈕可切換整個網站的語言，預設為繁體中文。
+
+```powershell
+python scripts/compile_messages.py
+```
 
 執行完整測試：
 
@@ -44,14 +50,31 @@ python manage.py migrate --check
 
 ## 使用流程
 
-1. 在首頁查看既有旅程，或前往「建立新旅程」。
-2. 輸入旅程名稱並加入至少兩位旅伴。
-3. 在旅程明細頁查看成員、總支出與每筆支出。
-4. 新增支出，選擇付款者及共同分攤的成員。
+1. 在首頁查看既有活動，或前往「建立新活動」。
+2. 輸入活動名稱並加入至少兩位成員。
+3. 在活動明細頁查看成員、總支出與每筆支出。
+4. 新增支出，選擇付款者及分攤成員；可平均分攤，或輸入每位成員的自訂金額（加總須等於支出金額）。
 5. 開啟分帳結果，查看每位成員的應收／應付餘額與建議付款方式。
 
 所有金額均以 `Decimal` 與整數分進行計算；無法整除的零錢會用固定順序分配，確保每一分都被保存。
 
+## 專案結構
+
+```text
+SplitMate/
+├── config/             # Django 專案設定與根路由
+├── expenses/           # 分帳領域模型、表單、服務、頁面與測試
+│   ├── migrations/     # 資料庫結構遷移
+│   ├── static/         # CSS 與 JavaScript
+│   ├── templates/      # 活動、支出與分帳頁面
+│   └── tests/          # Django 自動化測試
+├── locale/             # 英文翻譯目錄與編譯檔
+├── scripts/            # 專案維護腳本
+├── templates/          # 全站共用模板
+├── manage.py
+└── requirements.txt
+```
+
 ## MVP 範圍
 
-目前版本刻意不包含支出分類、付款完成狀態（例如 `payment_status` 或 `is_paid`）、登入與多人即時協作。這些功能可在核心分帳流程驗證完成後再擴充。
+目前版本不包含支出分類、付款完成狀態（例如 `payment_status` 或 `is_paid`）、登入與多人即時協作。這些功能可在核心分帳流程驗證完成後再擴充。

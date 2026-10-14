@@ -2,8 +2,18 @@
 __pycache__/
 *.py[cod]
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
 .coverage
+htmlcov/
 db.sqlite3
+.env
+.env.*
+!.env.example
+.superpowers/
+*.log
+.DS_Store
+Thumbs.db
 .idea/
 .vscode/
 
