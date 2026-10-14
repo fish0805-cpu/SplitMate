@@ -303,6 +303,33 @@ a { color: inherit; }
 .settlement-cta small, .settlement-cta strong { display: block; }
 .settlement-cta small { color: #d7ebe2; }
 
+.settlement-hero { padding: 70px 0 44px; text-align: center; }
+.settlement-hero .back-link { display: inline-block; margin-bottom: 42px; }
+.settlement-hero h1 { margin: 0; font-size: clamp(2.8rem, 7vw, 5.8rem); line-height: 1; letter-spacing: -0.06em; }
+.settlement-hero h1 span { color: var(--accent); }
+.settlement-hero p:last-child { color: var(--muted); }
+.balance-grid { display: grid; gap: 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.balance-card { border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); padding: 22px; }
+.balance-card.positive { border-top: 4px solid var(--accent); }
+.balance-card.negative { border-top: 4px solid #c8786e; }
+.balance-person { display: flex; align-items: center; gap: 10px; }
+.balance-person h3 { margin: 0; }
+.balance-numbers { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 22px 0; color: var(--muted); font-size: 0.84rem; }
+.balance-status { border-top: 1px solid var(--line); padding-top: 15px; }
+.balance-status small, .balance-status strong { display: block; }
+.balance-status small { color: var(--muted); }
+.balance-status strong { font-size: 1.3rem; }
+.settlement-section { background: #edf2ee; }
+.transfer-list { display: grid; gap: 14px; }
+.transfer-card { display: flex; align-items: center; justify-content: space-between; gap: 24px; border: 1px solid var(--line); border-radius: var(--radius-md); background: white; padding: 22px 26px; }
+.transfer-people { display: flex; align-items: center; gap: 12px; }
+.transfer-route { min-width: 150px; font-weight: 850; text-align: center; }
+.creditor-avatar { background: var(--accent); color: white; }
+.transfer-card > div:last-child { text-align: right; }
+.transfer-card small, .transfer-card strong { display: block; }
+.transfer-card small { color: var(--muted); }
+.transfer-card strong { font-size: 1.55rem; }
+
 .site-footer { padding: 28px 0 40px; color: var(--muted); font-size: 0.85rem; }
 
 @media (max-width: 900px) {
@@ -336,6 +363,11 @@ a { color: inherit; }
     .expense-card-main { align-items: flex-start; flex-direction: column; }
     .expense-meta { grid-template-columns: 1fr; }
     .trip-sidebar { grid-template-columns: 1fr; }
+    .balance-grid { grid-template-columns: 1fr; }
+    .transfer-card { align-items: stretch; flex-direction: column; }
+    .transfer-card > div:last-child { text-align: left; }
+    .transfer-people { justify-content: space-between; }
+    .transfer-route { min-width: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

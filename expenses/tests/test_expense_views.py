@@ -171,3 +171,74 @@ class TripDetailAndDeleteTests(TestCase):
         self.assertTrue(Expense.objects.filter(pk=other_expense.pk).exists())
 
 
+class SettlementViewTests(TestCase):
+    def _add_expense(self, trip, members, title, amount, payer, participants):
+        expense = Expense.objects.create(
+            trip=trip,
+            title=title,
+            amount=amount,
+            paid_by=members[payer],
+        )
+        expense.participants.add(*(members[name] for name in participants))
+
+    def test_tokyo_settlement_page_shows_all_balances_and_transfers(self):
+        trip = Trip.objects.create(name="Tokyo Trip")
+        members = {
+            name: Member.objects.create(trip=trip, name=name)
+            for name in ["Kai", "Kevin", "Amy", "Tom"]
+        }
+        self._add_expense(
+            trip, members, "晚餐", "2400.00", "Kai", ["Kai", "Kevin", "Amy", "Tom"]
+        )
+        self._add_expense(
+            trip, members, "飯店", "8000.00", "Amy", ["Kai", "Kevin", "Amy", "Tom"]
+        )
+        self._add_expense(
+            trip, members, "計程車", "600.00", "Kevin", ["Kai", "Kevin", "Amy"]
+        )
+
+        response = self.client.get(reverse("expenses:settlement", args=[trip.pk]))
+
+        self.assertContains(response, "Kai")
+        self.assertContains(response, "實付 NT$ 2,400")
+        self.assertContains(response, "應負擔 NT$ 2,800")
+        self.assertContains(response, "應付款 NT$ 400")
+        self.assertContains(response, "實付 NT$ 600")
+        self.assertContains(response, "應付款 NT$ 2,200")
+        self.assertContains(response, "實付 NT$ 8,000")
+        self.assertContains(response, "應收款 NT$ 5,200")
+        self.assertContains(response, "實付 NT$ 0")
+        self.assertContains(response, "應負擔 NT$ 2,600")
+        self.assertContains(response, "應付款 NT$ 2,600")
+        self.assertContains(response, "Kai → Amy")
+        self.assertContains(response, "Kevin → Amy")
+        self.assertContains(response, "Tom → Amy")
+
+    def test_trip_without_expenses_shows_settlement_empty_state(self):
+        trip = Trip.objects.create(name="Empty Trip")
+        Member.objects.create(trip=trip, name="A")
+        Member.objects.create(trip=trip, name="B")
+
+        response = self.client.get(reverse("expenses:settlement", args=[trip.pk]))
+
+        self.assertContains(response, "尚無可結算支出")
+        self.assertNotContains(response, "付款給")
+
+    def test_balanced_trip_shows_no_transfer_required(self):
+        trip = Trip.objects.create(name="Balanced Trip")
+        member = Member.objects.create(trip=trip, name="Kai")
+        Member.objects.create(trip=trip, name="Amy")
+        expense = Expense.objects.create(
+            trip=trip,
+            title="個人咖啡",
+            amount="100.00",
+            paid_by=member,
+        )
+        expense.participants.add(member)
+
+        response = self.client.get(reverse("expenses:settlement", args=[trip.pk]))
+
+        self.assertContains(response, "目前不需要任何轉帳")
+        self.assertNotContains(response, "付款給")
+
+

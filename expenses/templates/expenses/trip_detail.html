@@ -91,7 +91,7 @@
                 {% endfor %}
             </div>
         </div>
-        <a class="settlement-cta" href="/trips/{{ trip.pk }}/settlement/">
+        <a class="settlement-cta" href="{% url 'expenses:settlement' trip.pk %}">
             <span>
                 <small>大家最後怎麼付？</small>
                 <strong>查看分帳結果</strong>

@@ -8,7 +8,11 @@ from django.views.decorators.http import require_POST
 
 from .forms import ExpenseForm, MemberFormSet, TripForm
 from .models import Expense, Member, Trip
-from .services import expense_allocations
+from .services import (
+    calculate_settlements,
+    calculate_trip_balances,
+    expense_allocations,
+)
 
 
 MONEY_FIELD = DecimalField(max_digits=12, decimal_places=2)
@@ -128,4 +132,35 @@ def delete_expense(request, trip_id, expense_id):
     )
     expense.delete()
     return redirect("expenses:trip_detail", trip_id=trip_id)
+
+
+def settlement(request, trip_id):
+    trip = get_object_or_404(Trip.objects.prefetch_related("members"), pk=trip_id)
+    balances = calculate_trip_balances(trip)
+    settlements = calculate_settlements(balances)
+    balance_rows = []
+    for item in balances:
+        if item.balance > 0:
+            status = "應收款"
+        elif item.balance < 0:
+            status = "應付款"
+        else:
+            status = "已結清"
+        balance_rows.append(
+            {
+                "item": item,
+                "status": status,
+                "status_amount": abs(item.balance),
+            }
+        )
+    return render(
+        request,
+        "expenses/settlement.html",
+        {
+            "trip": trip,
+            "balance_rows": balance_rows,
+            "settlements": settlements,
+            "has_expenses": trip.expenses.exists(),
+        },
+    )
 

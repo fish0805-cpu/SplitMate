@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}分帳結果｜{{ trip.name }}｜SplitMate{% endblock %}
+
+{% block content %}
+<section class="settlement-hero">
+    <div class="container">
+        <a class="back-link" href="{% url 'expenses:trip_detail' trip.pk %}">← 回到 {{ trip.name }}</a>
+        <p class="eyebrow">SETTLEMENT</p>
+        <h1>把帳算清楚，<br><span>把回憶留下。</span></h1>
+        <p>每一分錢都精確分配，照著下方結果付款即可。</p>
+    </div>
+</section>
+
+<section class="section container">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">MEMBER BALANCES</p>
+            <h2>每位成員的帳目</h2>
+        </div>
+    </div>
+    <div class="balance-grid">
+        {% for row in balance_rows %}
+        <article class="balance-card{% if row.status == '應收款' %} positive{% elif row.status == '應付款' %} negative{% endif %}">
+            <div class="balance-person">
+                <span class="avatar">{{ row.item.member.name|first|upper }}</span>
+                <h3>{{ row.item.member.name }}</h3>
+            </div>
+            <div class="balance-numbers">
+                <span>實付 NT$ {{ row.item.paid|floatformat:"-2"|intcomma:False }}</span>
+                <span>應負擔 NT$ {{ row.item.should_pay|floatformat:"-2"|intcomma:False }}</span>
+            </div>
+            <div class="balance-status">
+                <small>{{ row.status }}</small>
+                {% if row.status == "已結清" %}
+                <strong>已結清 NT$ 0</strong>
+                {% else %}
+                <strong>{{ row.status }} NT$ {{ row.status_amount|floatformat:"-2"|intcomma:False }}</strong>
+                {% endif %}
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="section settlement-section">
+    <div class="container">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">WHO PAYS WHOM</p>
+                <h2>建議付款方式</h2>
+            </div>
+        </div>
+
+        {% if settlements %}
+        <div class="transfer-list">
+            {% for transfer in settlements %}
+            <article class="transfer-card">
+                <div class="transfer-people">
+                    <span class="avatar">{{ transfer.debtor.name|first|upper }}</span>
+                    <span class="transfer-route">{{ transfer.debtor.name }} → {{ transfer.creditor.name }}</span>
+                    <span class="avatar creditor-avatar">{{ transfer.creditor.name|first|upper }}</span>
+                </div>
+                <div>
+                    <small>{{ transfer.debtor.name }} 付款給 {{ transfer.creditor.name }}</small>
+                    <strong>NT$ {{ transfer.amount|floatformat:"-2"|intcomma:False }}</strong>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% elif not has_expenses %}
+        <div class="empty-state">
+            <div class="empty-icon" aria-hidden="true">＝</div>
+            <h3>尚無可結算支出</h3>
+            <p>新增支出後，這裡會自動整理每個人的應付與應收款。</p>
+            <a class="button button-secondary" href="{% url 'expenses:add_expense' trip.pk %}">新增支出</a>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon" aria-hidden="true">✓</div>
+            <h3>目前不需要任何轉帳</h3>
+            <p>所有人的 Balance 都已歸零，這趟旅程已經結清。</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
