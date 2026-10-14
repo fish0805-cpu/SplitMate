@@ -33,6 +33,12 @@ class AddExpenseViewTests(TestCase):
             form.fields["participants"].queryset,
             [self.kai, self.amy],
         )
+        self.assertContains(response, 'for="id_title"')
+        self.assertContains(response, 'for="id_amount"')
+        self.assertContains(response, 'for="id_paid_by"')
+        self.assertContains(response, 'for="id_participants_0"')
+        self.assertContains(response, "<main>", count=1)
+        self.assertContains(response, "<h1>", count=1)
 
     def test_valid_expense_saves_payer_and_participants(self):
         response = self.client.post(self.url, self._valid_data())
@@ -57,6 +63,7 @@ class AddExpenseViewTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "金額必須大於 0")
+        self.assertContains(response, 'role="alert"')
         self.assertEqual(Expense.objects.count(), 0)
 
     def test_missing_participant_is_rejected(self):
@@ -118,7 +125,7 @@ class TripDetailAndDeleteTests(TestCase):
         self.assertContains(response, "還沒有支出")
 
     def test_trip_detail_shows_expense_payer_participants_and_equal_share(self):
-        self._create_expense()
+        expense = self._create_expense()
 
         response = self.client.get(self.detail_url)
 
@@ -127,6 +134,11 @@ class TripDetailAndDeleteTests(TestCase):
         self.assertContains(response, "由 Kai 付款")
         self.assertContains(response, "Kai、Kevin、Amy")
         self.assertContains(response, "每人 NT$ 800")
+        self.assertContains(response, 'method="post"')
+        self.assertContains(
+            response,
+            reverse("expenses:delete_expense", args=[self.trip.pk, expense.pk]),
+        )
 
     def test_non_divisible_expense_shows_conserved_share_range(self):
         self._create_expense(title="測試零錢", amount="0.01")
@@ -223,6 +235,8 @@ class SettlementViewTests(TestCase):
 
         self.assertContains(response, "尚無可結算支出")
         self.assertNotContains(response, "付款給")
+        self.assertContains(response, "<main>", count=1)
+        self.assertContains(response, "<h1>", count=1)
 
     def test_balanced_trip_shows_no_transfer_required(self):
         trip = Trip.objects.create(name="Balanced Trip")

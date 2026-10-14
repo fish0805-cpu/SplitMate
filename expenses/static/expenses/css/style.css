@@ -132,7 +132,7 @@ a { color: inherit; }
 .button-primary { background: var(--ink); color: white; }
 .button-secondary { border-color: var(--line); background: white; color: var(--ink); }
 .button:hover { transform: translateY(-1px); }
-.button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+.button:focus-visible, button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
     outline: none;
     box-shadow: var(--focus);
 }
@@ -332,7 +332,12 @@ a { color: inherit; }
 
 .site-footer { padding: 28px 0 40px; color: var(--muted); font-size: 0.85rem; }
 
-@media (max-width: 900px) {
+.form-layout > *, .trip-layout > *, .field-grid > * { min-width: 0; }
+.field-group input, .field-group select { max-width: 100%; }
+.delete-button, .text-button { min-height: 44px; padding-inline: 10px; }
+.transfer-card, .transfer-people { flex-wrap: wrap; }
+
+@media (max-width: 72rem) {
     .hero-grid { grid-template-columns: 1fr; }
     .hero-art { min-height: 330px; }
     .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -342,12 +347,12 @@ a { color: inherit; }
     .trip-sidebar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
-@media (max-width: 620px) {
+@media (max-width: 48rem) {
     .container { width: min(100% - 28px, 1120px); }
     .nav-action { display: none; }
     .hero { padding: 56px 0 40px; }
     .hero h1 { font-size: clamp(2.8rem, 15vw, 4.4rem); }
-    .hero-art { min-height: 290px; }
+    .hero-art { overflow: clip; min-height: 290px; }
     .hero-card-main { inset: 36px 18px auto 0; padding: 26px; }
     .hero-card-note { right: 0; bottom: 34px; }
     .hero-card-amount { font-size: 1.8rem; }

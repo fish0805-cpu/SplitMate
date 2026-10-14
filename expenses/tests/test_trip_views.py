@@ -1,9 +1,26 @@
 from decimal import Decimal
+from pathlib import Path
 
+from django.conf import settings
+from django.test import SimpleTestCase
 from django.test import TestCase
 from django.urls import reverse
 
 from expenses.models import Expense, Member, Trip
+
+
+class ResponsiveAssetTests(SimpleTestCase):
+    def test_mobile_hero_clips_rotated_decoration_without_page_overflow(self):
+        stylesheet = (
+            Path(settings.BASE_DIR)
+            / "expenses"
+            / "static"
+            / "expenses"
+            / "css"
+            / "style.css"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn(".hero-art { overflow: clip;", stylesheet)
 
 
 class HomeViewTests(TestCase):
@@ -15,6 +32,9 @@ class HomeViewTests(TestCase):
         self.assertContains(response, "Not friendships.")
         self.assertContains(response, "建立新旅程")
         self.assertContains(response, "還沒有旅程")
+        self.assertContains(response, "<main>", count=1)
+        self.assertContains(response, "<h1>", count=1)
+        self.assertContains(response, "/static/expenses/css/style.css")
 
     def test_home_lists_trip_member_count_and_total(self):
         trip = Trip.objects.create(name="Tokyo Trip")
@@ -66,6 +86,11 @@ class CreateTripViewTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["member_formset"].total_form_count(), 2)
+        self.assertContains(response, 'for="id_name"')
+        self.assertContains(response, 'for="id_members-0-name"')
+        self.assertContains(response, 'for="id_members-1-name"')
+        self.assertContains(response, "<main>", count=1)
+        self.assertContains(response, "<h1>", count=1)
 
     def test_valid_post_creates_trip_and_members_then_redirects(self):
         response = self.client.post(
@@ -104,6 +129,14 @@ class CreateTripViewTests(TestCase):
         self.assertContains(response, "成員名稱不可重複")
         self.assertEqual(Trip.objects.count(), 0)
         self.assertEqual(Member.objects.count(), 0)
+
+    def test_invalid_trip_announces_error_summary(self):
+        data = self._post_data(["Kai", "Kevin"])
+        data["name"] = ""
+
+        response = self.client.post(reverse("expenses:create_trip"), data)
+
+        self.assertContains(response, 'role="alert"')
 
     def test_deleted_or_blank_extra_rows_do_not_count_as_members(self):
         response = self.client.post(

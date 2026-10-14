@@ -42,7 +42,7 @@
             </div>
             <h3>{{ trip.name }}</h3>
             <p class="muted">總支出</p>
-            <p class="money">NT$ {{ trip.total_expense|floatformat:"-2"|intcomma }}</p>
+            <p class="money">NT$ {{ trip.total_expense|floatformat:"-2"|intcomma:False }}</p>
             <a class="card-link" href="{% url 'expenses:trip_detail' trip.pk %}">查看旅程 <span aria-hidden="true">→</span></a>
         </article>
         {% endfor %}

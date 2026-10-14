@@ -14,10 +14,10 @@
     <form method="post" class="panel form-panel" novalidate>
         {% csrf_token %}
 
-        {% if trip_form.non_field_errors or member_formset.non_form_errors %}
-        <div class="error-summary" role="alert">
-            {{ trip_form.non_field_errors }}
-            {{ member_formset.non_form_errors }}
+        {% if trip_form.errors or member_formset.errors or member_formset.non_form_errors %}
+        <div class="error-summary" role="alert" tabindex="-1">
+            <strong>請修正下方標示的欄位。</strong>
+            {{ trip_form.non_field_errors }}{{ member_formset.non_form_errors }}
         </div>
         {% endif %}
 
