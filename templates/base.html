@@ -1,21 +1,32 @@
-{% load static %}
+{% load static i18n %}
+{% get_current_language as CURRENT_LANGUAGE %}
 <!doctype html>
-<html lang="zh-Hant">
+<html lang="{% if CURRENT_LANGUAGE == 'en' %}en{% else %}zh-Hant{% endif %}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="SplitMate 多人旅程分帳工具">
+    <meta name="description" content="{% trans 'SplitMate 多人活動分帳工具' %}">
     <title>{% block title %}SplitMate{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'expenses/css/style.css' %}?v=20261015-1">
+    <link rel="stylesheet" href="{% static 'expenses/css/style.css' %}?v=20261015-12">
 </head>
 <body>
     <header class="site-header">
         <div class="container nav-shell">
-            <a class="brand" href="{% url 'expenses:home' %}" aria-label="SplitMate 首頁">
+            <a class="brand" href="{% url 'expenses:home' %}" aria-label="{% trans 'SplitMate 首頁' %}">
                 <span class="brand-mark" aria-hidden="true">S</span>
                 <span>SplitMate</span>
             </a>
-            <a class="nav-action" href="{% url 'expenses:create_trip' %}">建立旅程</a>
+            <form class="language-switch-form" action="{% url 'set_language' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                {% if CURRENT_LANGUAGE == 'en' %}
+                <input type="hidden" name="language" value="zh-hant">
+                <button class="language-switch" type="submit" aria-label="Switch to Traditional Chinese">中文</button>
+                {% else %}
+                <input type="hidden" name="language" value="en">
+                <button class="language-switch" type="submit" aria-label="切換至英文">EN</button>
+                {% endif %}
+            </form>
         </div>
     </header>
     <main>
@@ -24,7 +35,7 @@
     <footer class="site-footer">
         <div class="container">Split expenses. Keep the good memories.</div>
     </footer>
-    <script src="{% static 'expenses/js/app.js' %}?v=20261015-1" defer></script>
+    <script src="{% static 'expenses/js/app.js' %}?v=20261015-5" defer></script>
 </body>
 </html>
 
