@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 from typing import Sequence
 
-from .models import Expense, Member, Trip
+from .models import Activity, Expense, Member
 
 
 CENT = Decimal("0.01")
@@ -48,19 +48,21 @@ def allocate_amount(
 
 
 def expense_allocations(expense: Expense) -> dict[int, Decimal]:
+    if expense.split_method == Expense.SplitMethod.CUSTOM:
+        return dict(expense.shares.values_list("member_id", "amount"))
     participant_ids = list(
         expense.participants.order_by("pk").values_list("pk", flat=True)
     )
     return allocate_amount(expense.amount, participant_ids)
 
 
-def calculate_trip_balances(trip: Trip) -> list[MemberBalance]:
-    members = list(trip.members.order_by("pk"))
+def calculate_activity_balances(activity: Activity) -> list[MemberBalance]:
+    members = list(activity.members.order_by("pk"))
     paid = {member.pk: 0 for member in members}
     should_pay = {member.pk: 0 for member in members}
 
-    expenses = trip.expenses.select_related("paid_by").prefetch_related(
-        "participants"
+    expenses = activity.expenses.select_related("paid_by").prefetch_related(
+        "participants", "shares"
     )
     for expense in expenses:
         paid[expense.paid_by_id] += _to_minor_units(expense.amount)
@@ -76,6 +78,37 @@ def calculate_trip_balances(trip: Trip) -> list[MemberBalance]:
         )
         for member in members
     ]
+
+
+def calculate_direct_payments(activity: Activity) -> list[Settlement]:
+    members = {member.pk: member for member in activity.members.all()}
+    debts: dict[tuple[int, int], int] = {}
+
+    for expense in activity.expenses.prefetch_related("participants", "shares"):
+        for member_id, share in expense_allocations(expense).items():
+            if member_id == expense.paid_by_id:
+                continue
+            pair = (member_id, expense.paid_by_id)
+            debts[pair] = debts.get(pair, 0) + _to_minor_units(share)
+
+    payments = []
+    for first_id, second_id in sorted({tuple(sorted(pair)) for pair in debts}):
+        difference = debts.get((first_id, second_id), 0) - debts.get(
+            (second_id, first_id), 0
+        )
+        if difference == 0:
+            continue
+        debtor_id, creditor_id = (
+            (first_id, second_id) if difference > 0 else (second_id, first_id)
+        )
+        payments.append(
+            Settlement(
+                debtor=members[debtor_id],
+                creditor=members[creditor_id],
+                amount=_from_minor_units(abs(difference)),
+            )
+        )
+    return payments
 
 
 def calculate_settlements(
