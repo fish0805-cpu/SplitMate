@@ -10,7 +10,7 @@
             <p class="eyebrow">TRAVEL LIGHTER, TOGETHER</p>
             <h1>Split expenses.<br><span>Not friendships.</span></h1>
             <p class="hero-lead">一起記錄支出，<br>簡單完成分帳。</p>
-            <a class="button button-primary" href="/trips/new/">建立新旅程 <span aria-hidden="true">→</span></a>
+            <a class="button button-primary" href="{% url 'expenses:create_trip' %}">建立新旅程 <span aria-hidden="true">→</span></a>
         </div>
         <div class="hero-art" aria-hidden="true">
             <div class="hero-card hero-card-main">
@@ -52,7 +52,7 @@
         <div class="empty-icon" aria-hidden="true">＋</div>
         <h3>還沒有旅程</h3>
         <p>建立第一個旅程，邀請旅伴一起記錄共同支出。</p>
-        <a class="button button-secondary" href="/trips/new/">開始建立</a>
+        <a class="button button-secondary" href="{% url 'expenses:create_trip' %}">開始建立</a>
     </div>
     {% endif %}
 </section>
