@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 from typing import Sequence
 
-from .models import Member, Trip
+from .models import Expense, Member, Trip
 
 
 CENT = Decimal("0.01")
@@ -47,6 +47,13 @@ def allocate_amount(
     }
 
 
+def expense_allocations(expense: Expense) -> dict[int, Decimal]:
+    participant_ids = list(
+        expense.participants.order_by("pk").values_list("pk", flat=True)
+    )
+    return allocate_amount(expense.amount, participant_ids)
+
+
 def calculate_trip_balances(trip: Trip) -> list[MemberBalance]:
     members = list(trip.members.order_by("pk"))
     paid = {member.pk: 0 for member in members}
@@ -57,12 +64,7 @@ def calculate_trip_balances(trip: Trip) -> list[MemberBalance]:
     )
     for expense in expenses:
         paid[expense.paid_by_id] += _to_minor_units(expense.amount)
-        participant_ids = list(
-            expense.participants.order_by("pk").values_list("pk", flat=True)
-        )
-        for member_id, share in allocate_amount(
-            expense.amount, participant_ids
-        ).items():
+        for member_id, share in expense_allocations(expense).items():
             should_pay[member_id] += _to_minor_units(share)
 
     return [

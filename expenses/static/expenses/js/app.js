@@ -1,4 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll("[data-confirm-delete]").forEach((form) => {
+        form.addEventListener("submit", (event) => {
+            if (!window.confirm("確定要刪除這筆支出嗎？")) {
+                event.preventDefault();
+            }
+        });
+    });
+
     const formset = document.querySelector("[data-member-formset]");
     if (!formset) return;
 

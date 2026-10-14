@@ -1,25 +1,104 @@
 {% extends "base.html" %}
+{% load humanize %}
 
 {% block title %}{{ trip.name }}｜SplitMate{% endblock %}
 
 {% block content %}
-<section class="page-hero container">
-    <a class="back-link" href="{% url 'expenses:home' %}">← 回到所有旅程</a>
-    <p class="eyebrow">TRIP OVERVIEW</p>
-    <h1>{{ trip.name }}</h1>
-    <p class="muted">{{ trip.members.count }} 位成員</p>
-</section>
-<section class="section container">
-    <div class="panel">
-        <div class="section-heading">
-            <h2>旅程成員</h2>
-        </div>
-        <div class="member-list">
-            {% for member in trip.members.all %}
-            <span class="member-chip">{{ member.name }}</span>
-            {% endfor %}
+<section class="trip-banner">
+    <div class="container">
+        <a class="back-link" href="{% url 'expenses:home' %}">← 回到所有旅程</a>
+        <div class="trip-banner-grid">
+            <div>
+                <p class="eyebrow">TRIP OVERVIEW</p>
+                <h1>{{ trip.name }}</h1>
+                <p class="muted">{{ trip.members.count }} 位成員</p>
+            </div>
+            <div class="total-card">
+                <span>旅程總支出</span>
+                <strong>NT$ {{ total_expense|floatformat:"-2"|intcomma:False }}</strong>
+                <small>{{ expense_summaries|length }} 筆支出</small>
+            </div>
         </div>
     </div>
+</section>
+
+<section class="section container trip-layout">
+    <div class="trip-main">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">EXPENSES</p>
+                <h2>最近支出</h2>
+            </div>
+            <a class="button button-primary" href="{% url 'expenses:add_expense' trip.pk %}">＋ 新增支出</a>
+        </div>
+
+        {% if expense_summaries %}
+        <div class="expense-list">
+            {% for summary in expense_summaries %}
+            <article class="expense-card">
+                <div class="expense-card-main">
+                    <div class="expense-title-row">
+                        <div class="expense-icon" aria-hidden="true">↗</div>
+                        <div>
+                            <h3>{{ summary.expense.title }}</h3>
+                            <p>由 {{ summary.expense.paid_by.name }} 付款</p>
+                        </div>
+                    </div>
+                    <p class="expense-amount">NT$ {{ summary.expense.amount|floatformat:"-2"|intcomma:False }}</p>
+                </div>
+                <div class="expense-meta">
+                    <div>
+                        <span>分攤成員</span>
+                        <strong>{{ summary.participant_names }}</strong>
+                    </div>
+                    <div>
+                        <span>平均負擔</span>
+                        {% if summary.is_equal %}
+                        <strong>每人 NT$ {{ summary.min_share|floatformat:"-2"|intcomma:False }}</strong>
+                        {% else %}
+                        <strong>NT$ {{ summary.min_share|floatformat:"-2"|intcomma:False }} – {{ summary.max_share|floatformat:"-2"|intcomma:False }}</strong>
+                        <small>餘額依最小貨幣單位分配</small>
+                        {% endif %}
+                    </div>
+                    <form method="post" action="{% url 'expenses:delete_expense' trip.pk summary.expense.pk %}" data-confirm-delete>
+                        {% csrf_token %}
+                        <button class="delete-button" type="submit" aria-label="刪除 {{ summary.expense.title }}">刪除</button>
+                    </form>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state compact-empty">
+            <div class="empty-icon" aria-hidden="true">＋</div>
+            <h3>還沒有支出</h3>
+            <p>新增第一筆共同支出，SplitMate 就會開始幫大家計算。</p>
+            <a class="button button-secondary" href="{% url 'expenses:add_expense' trip.pk %}">新增第一筆支出</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <aside class="trip-sidebar">
+        <div class="panel">
+            <p class="eyebrow">TRAVEL CREW</p>
+            <h2>旅程成員</h2>
+            <div class="member-stack">
+                {% for member in trip.members.all %}
+                <div class="member-row">
+                    <span class="avatar">{{ member.name|first|upper }}</span>
+                    <strong>{{ member.name }}</strong>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <a class="settlement-cta" href="/trips/{{ trip.pk }}/settlement/">
+            <span>
+                <small>大家最後怎麼付？</small>
+                <strong>查看分帳結果</strong>
+            </span>
+            <span aria-hidden="true">→</span>
+        </a>
+    </aside>
 </section>
 {% endblock %}
 

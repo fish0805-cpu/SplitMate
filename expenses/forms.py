@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import BaseFormSet, formset_factory
 
-from .models import Trip
+from .models import Expense, Member, Trip
 
 
 class TripForm(forms.ModelForm):
@@ -57,4 +57,40 @@ MemberFormSet = formset_factory(
     validate_min=True,
     can_delete=True,
 )
+
+
+class ExpenseForm(forms.ModelForm):
+    class Meta:
+        model = Expense
+        fields = ["title", "amount", "paid_by", "participants"]
+        labels = {
+            "title": "支出名稱",
+            "amount": "金額",
+            "paid_by": "付款者",
+            "participants": "參與分攤成員",
+        }
+        widgets = {
+            "title": forms.TextInput(
+                attrs={"placeholder": "例如：晚餐", "autocomplete": "off"}
+            ),
+            "amount": forms.NumberInput(
+                attrs={"placeholder": "0", "min": "0.01", "step": "0.01"}
+            ),
+            "participants": forms.CheckboxSelectMultiple(),
+        }
+        error_messages = {
+            "participants": {"required": "至少選擇一位參與成員。"},
+        }
+
+    def __init__(self, *args, trip: Trip, **kwargs):
+        super().__init__(*args, **kwargs)
+        members = Member.objects.filter(trip=trip).order_by("pk")
+        self.fields["paid_by"].queryset = members
+        self.fields["participants"].queryset = members
+
+    def clean_amount(self):
+        amount = self.cleaned_data["amount"]
+        if amount <= 0:
+            raise forms.ValidationError("金額必須大於 0。")
+        return amount
 

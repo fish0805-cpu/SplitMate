@@ -38,7 +38,11 @@ class HomeViewTests(TestCase):
 
         self.assertContains(response, "Tokyo Trip")
         self.assertContains(response, "4 位成員")
-        self.assertContains(response, "NT$ 11,000")
+        self.assertContains(
+            response,
+            '<p class="money">NT$ 11,000</p>',
+            html=True,
+        )
         self.assertContains(response, reverse("expenses:trip_detail", args=[trip.pk]))
 
 

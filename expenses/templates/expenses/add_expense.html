@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}新增支出｜{{ trip.name }}｜SplitMate{% endblock %}
+
+{% block content %}
+<section class="page-hero container page-hero-compact">
+    <a class="back-link" href="{% url 'expenses:trip_detail' trip.pk %}">← 回到 {{ trip.name }}</a>
+    <p class="eyebrow">NEW EXPENSE</p>
+    <h1>新增支出</h1>
+    <p class="muted">記下誰先付款，以及哪些旅伴要一起分攤。</p>
+</section>
+
+<section class="section container form-layout">
+    <form method="post" class="panel form-panel" novalidate>
+        {% csrf_token %}
+        {% if expense_form.non_field_errors %}
+        <div class="error-summary" role="alert">{{ expense_form.non_field_errors }}</div>
+        {% endif %}
+
+        <div class="form-section">
+            <div class="form-section-heading">
+                <span class="step-number">01</span>
+                <div>
+                    <h2>支出內容</h2>
+                    <p>輸入項目名稱與實際支付金額。</p>
+                </div>
+            </div>
+            <div class="field-grid">
+                <div class="field-group">
+                    <label for="{{ expense_form.title.id_for_label }}">{{ expense_form.title.label }}</label>
+                    {{ expense_form.title }}
+                    {% for error in expense_form.title.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+                </div>
+                <div class="field-group">
+                    <label for="{{ expense_form.amount.id_for_label }}">{{ expense_form.amount.label }}</label>
+                    <div class="money-input"><span>NT$</span>{{ expense_form.amount }}</div>
+                    {% for error in expense_form.amount.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-divider"></div>
+
+        <div class="form-section">
+            <div class="form-section-heading">
+                <span class="step-number">02</span>
+                <div>
+                    <h2>付款與分攤</h2>
+                    <p>第一版會在勾選的成員之間平均分攤。</p>
+                </div>
+            </div>
+            <div class="field-group">
+                <label for="{{ expense_form.paid_by.id_for_label }}">{{ expense_form.paid_by.label }}</label>
+                {{ expense_form.paid_by }}
+                {% for error in expense_form.paid_by.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+            </div>
+            <fieldset class="participant-fieldset">
+                <legend>{{ expense_form.participants.label }}</legend>
+                <div class="participant-grid">{{ expense_form.participants }}</div>
+                {% for error in expense_form.participants.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+            </fieldset>
+        </div>
+
+        <div class="form-actions">
+            <a class="button button-secondary" href="{% url 'expenses:trip_detail' trip.pk %}">取消</a>
+            <button class="button button-primary" type="submit">儲存支出 <span aria-hidden="true">→</span></button>
+        </div>
+    </form>
+
+    <aside class="form-aside">
+        <p class="eyebrow">EQUAL SPLIT</p>
+        <h2>這筆費用會平均分攤</h2>
+        <p>若金額無法整除，SplitMate 會以最小貨幣單位分配餘額，確保總額完全一致。</p>
+    </aside>
+</section>
+{% endblock %}
+

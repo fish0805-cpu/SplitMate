@@ -112,3 +112,17 @@ class BalanceAndSettlementTests(TestCase):
 
         self.assertEqual(services.calculate_settlements(balances), [])
 
+    def test_expense_allocations_use_saved_participants(self):
+        expense = self.trip.expenses.get(title="計程車")
+
+        allocations = services.expense_allocations(expense)
+
+        self.assertEqual(
+            allocations,
+            {
+                self.members["Kai"].pk: Decimal("200.00"),
+                self.members["Kevin"].pk: Decimal("200.00"),
+                self.members["Amy"].pk: Decimal("200.00"),
+            },
+        )
+
