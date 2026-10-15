@@ -59,6 +59,14 @@ class Member(models.Model):
 
 
 class Expense(models.Model):
+    class Category(models.TextChoices):
+        FOOD = "food", _("餐飲")
+        LODGING = "lodging", _("住宿")
+        TRANSPORTATION = "transportation", _("交通")
+        ACTIVITY = "activity", _("活動")
+        SHOPPING = "shopping", _("購物")
+        OTHER = "other", _("其他")
+
     class SplitMethod(models.TextChoices):
         EQUAL = "equal", _("平均分攤")
         CUSTOM = "custom", _("自訂金額")
@@ -83,6 +91,12 @@ class Expense(models.Model):
         Member,
         related_name="expenses_shared",
     )
+    category = models.CharField(
+        max_length=14,
+        choices=Category.choices,
+        default=Category.OTHER,
+        blank=True,
+    )
     split_method = models.CharField(
         max_length=6,
         choices=SplitMethod.choices,
@@ -96,6 +110,7 @@ class Expense(models.Model):
     def clean(self):
         super().clean()
         self.title = self.title.strip()
+        self.category = self.category or self.Category.OTHER
         errors = {}
         if not self.title:
             errors["title"] = _("請輸入支出名稱。")

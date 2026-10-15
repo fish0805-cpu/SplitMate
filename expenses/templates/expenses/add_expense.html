@@ -40,6 +40,11 @@
                     <div class="money-input"><span>NT$</span>{{ expense_form.amount }}</div>
                     {% for error in expense_form.amount.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
                 </div>
+                <div class="field-group">
+                    <label for="{{ expense_form.category.id_for_label }}">{{ expense_form.category.label }}</label>
+                    {{ expense_form.category }}
+                    {% for error in expense_form.category.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+                </div>
             </div>
         </div>
 

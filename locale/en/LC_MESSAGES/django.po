@@ -204,6 +204,27 @@ msgstr "Expense name"
 msgid "金額"
 msgstr "Amount"
 
+msgid "分類"
+msgstr "Category"
+
+msgid "餐飲"
+msgstr "Food"
+
+msgid "住宿"
+msgstr "Lodging"
+
+msgid "交通"
+msgstr "Transportation"
+
+msgid "活動"
+msgstr "Activity"
+
+msgid "購物"
+msgstr "Shopping"
+
+msgid "其他"
+msgstr "Other"
+
 msgid "付款者"
 msgstr "Payer"
 

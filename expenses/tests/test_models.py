@@ -49,6 +49,16 @@ class ExpenseModelTests(TestCase):
             [self.kai, self.amy],
         )
 
+    def test_expense_category_defaults_to_other(self):
+        expense = Expense.objects.create(
+            activity=self.activity,
+            title="雜費",
+            amount=Decimal("100.00"),
+            paid_by=self.kai,
+        )
+
+        self.assertEqual(expense.category, Expense.Category.OTHER)
+
     def test_expense_rejects_payer_from_another_activity(self):
         other_activity = Activity.objects.create(name="Osaka Trip")
         outsider = Member.objects.create(activity=other_activity, name="Tom")
