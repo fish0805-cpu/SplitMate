@@ -12,6 +12,11 @@ urlpatterns = [
     path("activities/<int:activity_id>/", views.activity_detail, name="activity_detail"),
     path("activities/<int:activity_id>/expenses/new/", views.add_expense, name="add_expense"),
     path(
+        "activities/<int:activity_id>/expenses/<int:expense_id>/edit/",
+        views.edit_expense,
+        name="edit_expense",
+    ),
+    path(
         "activities/<int:activity_id>/expenses/<int:expense_id>/delete/",
         views.delete_expense,
         name="delete_expense",
@@ -33,6 +38,10 @@ urlpatterns = [
     path(
         "trips/<int:activity_id>/expenses/new/",
         RedirectView.as_view(pattern_name="expenses:add_expense", permanent=False),
+    ),
+    path(
+        "trips/<int:activity_id>/expenses/<int:expense_id>/edit/",
+        views.edit_expense,
     ),
     path(
         "trips/<int:activity_id>/expenses/<int:expense_id>/delete/",

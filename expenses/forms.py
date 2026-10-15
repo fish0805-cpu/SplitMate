@@ -89,6 +89,11 @@ class ExpenseForm(forms.ModelForm):
     def __init__(self, *args, activity: Activity, **kwargs):
         super().__init__(*args, **kwargs)
         members = Member.objects.filter(activity=activity).order_by("pk")
+        saved_shares = {}
+        if not self.is_bound and self.instance.pk:
+            saved_shares = dict(
+                self.instance.shares.values_list("member_id", "amount")
+            )
         self.fields["paid_by"].queryset = members
         self.fields["participants"].queryset = members
         self.share_rows = []
@@ -100,6 +105,7 @@ class ExpenseForm(forms.ModelForm):
                 min_value=0,
                 required=False,
                 label=member.name,
+                initial=saved_shares.get(member.pk),
                 widget=forms.NumberInput(attrs={"min": "0", "step": "0.01", "placeholder": "0.00"}),
             )
             self.share_rows.append({"member": member, "field": self[field_name]})

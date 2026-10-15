@@ -326,6 +326,9 @@ html[lang="en"] .hero-lead { white-space: normal; }
 .expense-meta span, .expense-meta small { display: block; color: var(--muted); font-size: 0.76rem; }
 .expense-meta strong { display: block; font-size: 0.88rem; }
 .expense-share-list { display: flex; flex-wrap: wrap; gap: 2px 14px; }
+.expense-actions { display: flex; align-items: center; gap: 10px; }
+.expense-actions form { margin: 0; }
+.edit-button { color: var(--accent-dark); font-size: 0.84rem; font-weight: 780; text-decoration: none; }
 .delete-button { border: 0; background: transparent; color: var(--danger); font: inherit; font-size: 0.84rem; font-weight: 780; cursor: pointer; }
 .delete-dialog {
     width: min(440px, calc(100% - 32px));
@@ -430,7 +433,8 @@ html[lang="en"] .hero-lead { white-space: normal; }
 
 .form-layout > *, .activity-layout > *, .field-grid > * { min-width: 0; }
 .field-group input, .field-group select { max-width: 100%; }
-.delete-button, .text-button { min-height: 44px; padding-inline: 10px; }
+.edit-button, .delete-button, .text-button { min-height: 44px; padding-inline: 10px; }
+.edit-button { display: inline-flex; align-items: center; }
 .transfer-card, .transfer-people { flex-wrap: wrap; }
 
 @media (max-width: 72rem) {

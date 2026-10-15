@@ -140,7 +140,49 @@ def add_expense(request, activity_id):
     return render(
         request,
         "expenses/add_expense.html",
-        {"activity": activity, "expense_form": expense_form},
+        {"activity": activity, "expense_form": expense_form, "is_editing": False},
+    )
+
+
+def edit_expense(request, activity_id, expense_id):
+    activity = get_object_or_404(Activity, pk=activity_id)
+    expense = get_object_or_404(
+        Expense,
+        pk=expense_id,
+        activity_id=activity.pk,
+    )
+    if request.method == "POST":
+        expense_form = ExpenseForm(
+            request.POST,
+            activity=activity,
+            instance=expense,
+        )
+        if expense_form.is_valid():
+            with transaction.atomic():
+                expense = expense_form.save()
+                expense.shares.all().delete()
+                if expense.split_method == Expense.SplitMethod.CUSTOM:
+                    ExpenseShare.objects.bulk_create(
+                        ExpenseShare(
+                            expense=expense,
+                            member_id=member_id,
+                            amount=amount,
+                        )
+                        for member_id, amount in expense_form.custom_shares.items()
+                    )
+            return redirect("expenses:activity_detail", activity_id=activity.pk)
+    else:
+        expense_form = ExpenseForm(activity=activity, instance=expense)
+
+    return render(
+        request,
+        "expenses/add_expense.html",
+        {
+            "activity": activity,
+            "expense": expense,
+            "expense_form": expense_form,
+            "is_editing": True,
+        },
     )
 
 

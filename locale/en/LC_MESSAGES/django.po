@@ -150,6 +150,15 @@ msgstr "Activity total"
 msgid "新增支出"
 msgstr "Add expense"
 
+msgid "編輯"
+msgstr "Edit"
+
+msgid "編輯支出"
+msgstr "Edit expense"
+
+msgid "更新支出內容與分攤方式。"
+msgstr "Update the expense details and split method."
+
 msgid "由 %(payer)s 付款"
 msgstr "Paid by %(payer)s"
 
@@ -305,6 +314,9 @@ msgstr ": "
 
 msgid "儲存支出"
 msgstr "Save expense"
+
+msgid "儲存變更"
+msgstr "Save changes"
 
 msgid "這筆費用會平均分攤"
 msgstr "This expense is split equally"

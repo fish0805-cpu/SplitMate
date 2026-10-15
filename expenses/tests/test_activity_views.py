@@ -22,6 +22,13 @@ class ResponsiveAssetTests(SimpleTestCase):
 
         self.assertIn(".hero-art { overflow: clip;", stylesheet)
 
+    def test_stylesheet_url_uses_current_expense_action_version(self):
+        base_template = (
+            Path(settings.BASE_DIR) / "templates" / "base.html"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("style.css' %}?v=20261016-1", base_template)
+
 
 class HomeViewTests(TestCase):
     def test_hero_lead_does_not_force_a_line_break(self):

@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "新增支出" %}｜{{ activity.name }}｜SplitMate{% endblock %}
+{% block title %}{% if is_editing %}{% trans "編輯支出" %}{% else %}{% trans "新增支出" %}{% endif %}｜{{ activity.name }}｜SplitMate{% endblock %}
 
 {% block content %}
 <section class="page-hero container page-hero-compact">
     <a class="back-link" href="{% url 'expenses:activity_detail' activity.pk %}">← {% trans "回到" %} {{ activity.name }}</a>
-    <p class="eyebrow">NEW EXPENSE</p>
-    <h1>{% trans "新增支出" %}</h1>
-    <p class="muted">{% trans "記下誰先付款，以及哪些成員要一起分攤。" %}</p>
+    <p class="eyebrow">{% if is_editing %}EDIT EXPENSE{% else %}NEW EXPENSE{% endif %}</p>
+    <h1>{% if is_editing %}{% trans "編輯支出" %}{% else %}{% trans "新增支出" %}{% endif %}</h1>
+    <p class="muted">{% if is_editing %}{% trans "更新支出內容與分攤方式。" %}{% else %}{% trans "記下誰先付款，以及哪些成員要一起分攤。" %}{% endif %}</p>
 </section>
 
 <section class="section container form-layout">
@@ -92,7 +92,7 @@
 
         <div class="form-actions">
             <a class="button button-secondary" href="{% url 'expenses:activity_detail' activity.pk %}">{% trans "取消" %}</a>
-            <button class="button button-primary" type="submit">{% trans "儲存支出" %} <span aria-hidden="true">→</span></button>
+            <button class="button button-primary" type="submit">{% if is_editing %}{% trans "儲存變更" %}{% else %}{% trans "儲存支出" %}{% endif %} <span aria-hidden="true">→</span></button>
         </div>
     </form>
 

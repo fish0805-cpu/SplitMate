@@ -165,11 +165,17 @@ class EnglishPageTests(TestCase):
         expense.participants.add(kai, amy)
 
         detail = self.client.get(reverse("expenses:activity_detail", args=[activity.pk]))
+        edit = self.client.get(
+            reverse("expenses:edit_expense", args=[activity.pk, expense.pk])
+        )
         settlement = self.client.get(reverse("expenses:settlement", args=[activity.pk]))
 
         self.assertContains(detail, "Paid by Kai")
+        self.assertContains(detail, "Edit")
         self.assertContains(detail, "Delete this expense?")
         self.assertContains(detail, "will be removed from this activity")
+        self.assertContains(edit, "Edit expense")
+        self.assertContains(edit, "Save changes")
         self.assertContains(settlement, "To receive")
         self.assertContains(settlement, "To pay")
         self.assertContains(settlement, "Kai")
@@ -187,6 +193,7 @@ class EnglishPageTests(TestCase):
             reverse("expenses:create_activity"),
             reverse("expenses:activity_detail", args=[activity.pk]),
             reverse("expenses:add_expense", args=[activity.pk]),
+            reverse("expenses:edit_expense", args=[activity.pk, expense.pk]),
             reverse("expenses:settlement", args=[activity.pk]),
         ]
 

@@ -62,10 +62,13 @@
                         <small>{% trans "餘額依最小貨幣單位分配" %}</small>
                         {% endif %}
                     </div>
-                    <form id="delete-expense-{{ summary.expense.pk }}" method="post" action="{% url 'expenses:delete_expense' activity.pk summary.expense.pk %}">
-                        {% csrf_token %}
-                        <button class="delete-button" type="button" aria-label="{% blocktrans with title=summary.expense.title %}刪除 {{ title }}{% endblocktrans %}" data-delete-trigger data-expense-title="{{ summary.expense.title }}">{% trans "刪除" %}</button>
-                    </form>
+                    <div class="expense-actions">
+                        <a class="edit-button" href="{% url 'expenses:edit_expense' activity.pk summary.expense.pk %}">{% trans "編輯" %}</a>
+                        <form id="delete-expense-{{ summary.expense.pk }}" method="post" action="{% url 'expenses:delete_expense' activity.pk summary.expense.pk %}">
+                            {% csrf_token %}
+                            <button class="delete-button" type="button" aria-label="{% blocktrans with title=summary.expense.title %}刪除 {{ title }}{% endblocktrans %}" data-delete-trigger data-expense-title="{{ summary.expense.title }}">{% trans "刪除" %}</button>
+                        </form>
+                    </div>
                 </div>
             </article>
             {% endfor %}

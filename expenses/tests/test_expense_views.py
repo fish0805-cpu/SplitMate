@@ -196,6 +196,116 @@ class AddExpenseViewTests(TestCase):
         self.assertEqual(Expense.objects.count(), 0)
 
 
+class EditExpenseViewTests(TestCase):
+    def setUp(self):
+        self.activity = Activity.objects.create(name="Tokyo Trip")
+        self.kai = Member.objects.create(activity=self.activity, name="Kai")
+        self.amy = Member.objects.create(activity=self.activity, name="Amy")
+        self.expense = Expense.objects.create(
+            activity=self.activity,
+            title="晚餐",
+            amount="1000.00",
+            category=Expense.Category.FOOD,
+            paid_by=self.kai,
+            split_method=Expense.SplitMethod.CUSTOM,
+        )
+        self.expense.participants.add(self.kai, self.amy)
+        ExpenseShare.objects.create(expense=self.expense, member=self.kai, amount="300.00")
+        ExpenseShare.objects.create(expense=self.expense, member=self.amy, amount="700.00")
+        self.url = reverse(
+            "expenses:edit_expense",
+            args=[self.activity.pk, self.expense.pk],
+        )
+
+    def _valid_data(self, **overrides):
+        data = {
+            "title": "交通費",
+            "amount": "900.00",
+            "category": Expense.Category.TRANSPORTATION,
+            "paid_by": str(self.amy.pk),
+            "participants": [str(self.kai.pk), str(self.amy.pk)],
+            "split_method": Expense.SplitMethod.CUSTOM,
+            f"share_{self.kai.pk}": "400.00",
+            f"share_{self.amy.pk}": "500.00",
+        }
+        data.update(overrides)
+        return data
+
+    def test_edit_form_prefills_expense_and_custom_shares(self):
+        response = self.client.get(self.url)
+
+        form = response.context["expense_form"]
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(form.instance, self.expense)
+        self.assertEqual(form["title"].value(), "晚餐")
+        self.assertEqual(str(form["amount"].value()), "1000.00")
+        self.assertEqual(form["category"].value(), Expense.Category.FOOD)
+        self.assertEqual(form["paid_by"].value(), self.kai.pk)
+        self.assertEqual(
+            set(form["participants"].value()),
+            {self.kai.pk, self.amy.pk},
+        )
+        self.assertEqual(str(form[f"share_{self.kai.pk}"].value()), "300.00")
+        self.assertEqual(str(form[f"share_{self.amy.pk}"].value()), "700.00")
+        self.assertContains(response, "編輯支出")
+        self.assertContains(response, "儲存變更")
+
+    def test_post_updates_expense_and_custom_shares(self):
+        response = self.client.post(self.url, self._valid_data())
+
+        self.assertRedirects(
+            response,
+            reverse("expenses:activity_detail", args=[self.activity.pk]),
+        )
+        self.expense.refresh_from_db()
+        self.assertEqual(self.expense.title, "交通費")
+        self.assertEqual(str(self.expense.amount), "900.00")
+        self.assertEqual(self.expense.category, Expense.Category.TRANSPORTATION)
+        self.assertEqual(self.expense.paid_by, self.amy)
+        self.assertQuerySetEqual(
+            self.expense.participants.order_by("pk"),
+            [self.kai, self.amy],
+        )
+        self.assertEqual(
+            dict(self.expense.shares.values_list("member_id", "amount")),
+            {self.kai.pk: 400, self.amy.pk: 500},
+        )
+
+    def test_switching_to_equal_clears_custom_shares(self):
+        data = self._valid_data(
+            split_method=Expense.SplitMethod.EQUAL,
+            **{
+                f"share_{self.kai.pk}": "",
+                f"share_{self.amy.pk}": "",
+            },
+        )
+
+        response = self.client.post(self.url, data)
+
+        self.assertRedirects(
+            response,
+            reverse("expenses:activity_detail", args=[self.activity.pk]),
+        )
+        self.expense.refresh_from_db()
+        self.assertEqual(self.expense.split_method, Expense.SplitMethod.EQUAL)
+        self.assertFalse(self.expense.shares.exists())
+
+    def test_edit_url_rejects_expense_from_other_activity(self):
+        other_activity = Activity.objects.create(name="Osaka Trip")
+        wrong_url = reverse(
+            "expenses:edit_expense",
+            args=[other_activity.pk, self.expense.pk],
+        )
+
+        get_response = self.client.get(wrong_url)
+        post_response = self.client.post(wrong_url, self._valid_data())
+
+        self.assertEqual(get_response.status_code, 404)
+        self.assertEqual(post_response.status_code, 404)
+        self.expense.refresh_from_db()
+        self.assertEqual(self.expense.title, "晚餐")
+
+
 class ActivityDetailAndDeleteTests(TestCase):
     def setUp(self):
         self.activity = Activity.objects.create(name="Tokyo Trip")
@@ -248,10 +358,21 @@ class ActivityDetailAndDeleteTests(TestCase):
         self.assertContains(response, "Kai、Kevin、Amy")
         self.assertContains(response, "每人 NT$ 800")
         self.assertContains(response, 'method="post"')
+        edit_url = reverse(
+            "expenses:edit_expense",
+            args=[self.activity.pk, expense.pk],
+        )
+        delete_url = reverse(
+            "expenses:delete_expense",
+            args=[self.activity.pk, expense.pk],
+        )
+        self.assertContains(response, edit_url)
         self.assertContains(
             response,
-            reverse("expenses:delete_expense", args=[self.activity.pk, expense.pk]),
+            delete_url,
         )
+        html = response.content.decode()
+        self.assertLess(html.index(edit_url), html.index(delete_url))
 
     def test_total_card_is_between_members_and_settlement_link(self):
         self._create_expense(amount="2400.00")
