@@ -7,14 +7,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="{% trans 'SplitMate 多人活動分帳工具' %}">
     <title>{% block title %}SplitMate{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'expenses/css/style.css' %}?v=20261015-12">
+    <link rel="icon" type="image/png" href="{% static 'expenses/images/favicon.png' %}">
+    <link rel="stylesheet" href="{% static 'expenses/css/style.css' %}?v=20261015-15">
 </head>
 <body>
     <header class="site-header">
         <div class="container nav-shell">
             <a class="brand" href="{% url 'expenses:home' %}" aria-label="{% trans 'SplitMate 首頁' %}">
-                <span class="brand-mark" aria-hidden="true">S</span>
-                <span>SplitMate</span>
+                <span class="brand-split">Split</span><span class="brand-mate">Mate</span>
             </a>
             <form class="language-switch-form" action="{% url 'set_language' %}" method="post">
                 {% csrf_token %}

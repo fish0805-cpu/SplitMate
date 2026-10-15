@@ -55,22 +55,15 @@ a { color: inherit; }
 .brand {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    color: var(--ink);
-    font-size: 1.08rem;
+    font-size: 1.15rem;
     font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1;
     text-decoration: none;
 }
 
-.brand-mark {
-    display: grid;
-    width: 34px;
-    height: 34px;
-    place-items: center;
-    border-radius: 11px;
-    background: var(--accent);
-    color: white;
-}
+.brand-split { color: var(--ink); }
+.brand-mate { color: var(--accent); }
 
 .nav-action,
 .back-link,
