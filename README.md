@@ -26,13 +26,8 @@ SplitMate 使用專案目錄中的 SQLite 資料庫 `db.sqlite3`，不需要另�
 python manage.py runserver 8500
 ```
 
-瀏覽器開啟 `http://127.0.0.1:8500/`。
-
+啟動成功後，在瀏覽器開啟 http://127.0.0.1:8500/。
 右上角的 `EN`／`中文` 按鈕可切換整個網站的語言，預設為繁體中文。
-
-```powershell
-python scripts/compile_messages.py
-```
 
 執行完整測試：
 
