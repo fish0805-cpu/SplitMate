@@ -35,6 +35,7 @@ class AddExpenseViewTests(TestCase):
         )
         self.assertContains(response, 'for="id_title"')
         self.assertContains(response, 'for="id_amount"')
+        self.assertContains(response, 'for="id_category"')
         self.assertContains(response, 'for="id_paid_by"')
         self.assertContains(response, 'for="id_participants_0"')
         self.assertContains(response, 'name="split_method"')
@@ -58,6 +59,19 @@ class AddExpenseViewTests(TestCase):
             [self.kai, self.amy],
         )
         self.assertEqual(expense.split_method, Expense.SplitMethod.EQUAL)
+        self.assertEqual(expense.category, Expense.Category.OTHER)
+
+    def test_expense_can_save_category_and_detail_shows_it(self):
+        data = self._valid_data()
+        data["category"] = Expense.Category.FOOD
+
+        response = self.client.post(self.url, data)
+
+        self.assertRedirects(response, reverse("expenses:activity_detail", args=[self.activity.pk]))
+        expense = Expense.objects.get(title="晚餐")
+        self.assertEqual(expense.category, Expense.Category.FOOD)
+        detail = self.client.get(reverse("expenses:activity_detail", args=[self.activity.pk]))
+        self.assertContains(detail, "餐飲")
 
     def test_custom_split_saves_member_amounts_and_settlement(self):
         data = self._valid_data()

@@ -37,7 +37,7 @@
                         <div class="expense-icon" aria-hidden="true">↗</div>
                         <div>
                             <h3>{{ summary.expense.title }}</h3>
-                            <p>{% blocktrans with payer=summary.expense.paid_by.name %}由 {{ payer }} 付款{% endblocktrans %}</p>
+                            <p>{% blocktrans with payer=summary.expense.paid_by.name %}由 {{ payer }} 付款{% endblocktrans %} · {{ summary.expense.get_category_display }}</p>
                         </div>
                     </div>
                     <p class="expense-amount">NT$ {{ summary.expense.amount|floatformat:"-2"|intcomma:False }}</p>

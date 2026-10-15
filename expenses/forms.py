@@ -63,10 +63,11 @@ MemberFormSet = formset_factory(
 class ExpenseForm(forms.ModelForm):
     class Meta:
         model = Expense
-        fields = ["title", "amount", "paid_by", "participants", "split_method"]
+        fields = ["title", "amount", "category", "paid_by", "participants", "split_method"]
         labels = {
             "title": _("支出名稱"),
             "amount": _("金額"),
+            "category": _("分類"),
             "paid_by": _("付款者"),
             "participants": _("參與分攤成員"),
             "split_method": _("分攤方式"),
