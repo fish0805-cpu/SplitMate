@@ -65,9 +65,19 @@
                     <span class="transfer-route">{{ transfer.debtor.name }} → {{ transfer.creditor.name }}</span>
                     <span class="avatar creditor-avatar">{{ transfer.creditor.name|first|upper }}</span>
                 </div>
-                <div>
+                <div class="transfer-details">
                     <small>{% blocktrans with debtor=transfer.debtor.name creditor=transfer.creditor.name %}{{ debtor }} 付款給 {{ creditor }}{% endblocktrans %}</small>
                     <strong>NT$ {{ transfer.amount|floatformat:"-2"|intcomma:False }}</strong>
+                    <form method="post" action="{% url 'expenses:toggle_settlement_payment' activity.pk transfer.debtor.pk transfer.creditor.pk %}">
+                        {% csrf_token %}
+                        {% if transfer.is_paid %}
+                        <span class="payment-status payment-status-paid">✓ {% trans "已付款" %}</span>
+                        <button class="payment-toggle" type="submit">{% trans "取消付款標記" %}</button>
+                        {% else %}
+                        <span class="payment-status payment-status-unpaid">{% trans "未付款" %}</span>
+                        <button class="payment-toggle" type="submit">{% trans "標記為已付款" %}</button>
+                        {% endif %}
+                    </form>
                 </div>
             </article>
             {% endfor %}

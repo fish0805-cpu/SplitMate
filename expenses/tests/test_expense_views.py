@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 
-from expenses.models import Expense, ExpenseShare, Member, Activity
+from expenses.models import Activity, Expense, ExpenseShare, Member, SettlementPayment
 
 
 class AddExpenseViewTests(TestCase):
@@ -476,5 +476,56 @@ class SettlementViewTests(TestCase):
 
         self.assertContains(response, "目前不需要任何轉帳")
         self.assertNotContains(response, "付款給")
+
+    def test_payment_status_can_be_toggled_and_persists_after_refresh(self):
+        activity = Activity.objects.create(name="Dinner")
+        kai = Member.objects.create(activity=activity, name="Kai")
+        amy = Member.objects.create(activity=activity, name="Amy")
+        expense = Expense.objects.create(
+            activity=activity, title="Meal", amount="100.00", paid_by=kai
+        )
+        expense.participants.add(kai, amy)
+        settlement_url = reverse("expenses:settlement", args=[activity.pk])
+        toggle_url = reverse(
+            "expenses:toggle_settlement_payment", args=[activity.pk, amy.pk, kai.pk]
+        )
+
+        response = self.client.get(settlement_url)
+        self.assertContains(response, "未付款")
+        self.assertContains(response, "標記為已付款")
+
+        response = self.client.post(toggle_url)
+        self.assertRedirects(response, settlement_url)
+        payment = SettlementPayment.objects.get(
+            activity=activity, debtor=amy, creditor=kai
+        )
+        self.assertTrue(payment.is_paid)
+        self.assertEqual(str(payment.amount), "50.00")
+
+        response = self.client.get(settlement_url)
+        self.assertContains(response, "✓ 已付款")
+        self.assertContains(response, "取消付款標記")
+
+        self.client.post(toggle_url)
+        payment.refresh_from_db()
+        self.assertFalse(payment.is_paid)
+
+    def test_payment_toggle_ignores_pairs_that_are_not_current_settlements(self):
+        activity = Activity.objects.create(name="Dinner")
+        kai = Member.objects.create(activity=activity, name="Kai")
+        amy = Member.objects.create(activity=activity, name="Amy")
+        expense = Expense.objects.create(
+            activity=activity, title="Coffee", amount="100.00", paid_by=kai
+        )
+        expense.participants.add(kai)
+
+        response = self.client.post(
+            reverse(
+                "expenses:toggle_settlement_payment", args=[activity.pk, amy.pk, kai.pk]
+            )
+        )
+
+        self.assertRedirects(response, reverse("expenses:settlement", args=[activity.pk]))
+        self.assertFalse(SettlementPayment.objects.exists())
 
 

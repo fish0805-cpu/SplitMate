@@ -133,3 +133,47 @@ class ExpenseShare(models.Model):
                 name="unique_member_share_per_expense",
             )
         ]
+
+
+class SettlementPayment(models.Model):
+    activity = models.ForeignKey(
+        Activity,
+        on_delete=models.CASCADE,
+        related_name="settlement_payments",
+    )
+    debtor = models.ForeignKey(
+        Member,
+        on_delete=models.PROTECT,
+        related_name="settlement_payments_to_make",
+    )
+    creditor = models.ForeignKey(
+        Member,
+        on_delete=models.PROTECT,
+        related_name="settlement_payments_to_receive",
+    )
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    is_paid = models.BooleanField(default=False)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["activity", "debtor", "creditor"],
+                name="unique_settlement_payment_per_pair",
+            )
+        ]
+
+    def clean(self):
+        super().clean()
+        errors = {}
+        if self.debtor_id and self.debtor.activity_id != self.activity_id:
+            errors["debtor"] = _("付款人必須屬於這個活動。")
+        if self.creditor_id and self.creditor.activity_id != self.activity_id:
+            errors["creditor"] = _("收款人必須屬於這個活動。")
+        if self.debtor_id and self.debtor_id == self.creditor_id:
+            errors["creditor"] = _("付款人與收款人不可相同。")
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
