@@ -1,3 +1,4 @@
+from dataclasses import replace
 from decimal import Decimal
 
 from django.db import transaction
@@ -8,7 +9,7 @@ from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
 from .forms import ActivityForm, ExpenseForm, MemberFormSet
-from .models import Activity, Expense, ExpenseShare, Member
+from .models import Activity, Expense, ExpenseShare, Member, SettlementPayment
 from .services import (
     calculate_activity_balances,
     calculate_direct_payments,
@@ -158,6 +159,21 @@ def settlement(request, activity_id):
     activity = get_object_or_404(Activity.objects.prefetch_related("members"), pk=activity_id)
     balances = calculate_activity_balances(activity)
     settlements = calculate_settlements(balances)
+    paid_settlements = {
+        (payment.debtor_id, payment.creditor_id, payment.amount)
+        for payment in SettlementPayment.objects.filter(activity=activity, is_paid=True)
+    }
+    settlements = [
+        replace(
+            transfer,
+            is_paid=(
+                transfer.debtor.pk,
+                transfer.creditor.pk,
+                transfer.amount,
+            ) in paid_settlements,
+        )
+        for transfer in settlements
+    ]
     direct_payments = calculate_direct_payments(activity)
     calculation_expenses = []
     for expense in activity.expenses.select_related("paid_by").prefetch_related(
@@ -204,4 +220,36 @@ def settlement(request, activity_id):
             "has_expenses": bool(calculation_expenses),
         },
     )
+
+
+@require_POST
+def toggle_settlement_payment(request, activity_id, debtor_id, creditor_id):
+    activity = get_object_or_404(Activity.objects.prefetch_related("members"), pk=activity_id)
+    transfer = next(
+        (
+            settlement
+            for settlement in calculate_settlements(calculate_activity_balances(activity))
+            if settlement.debtor.pk == debtor_id and settlement.creditor.pk == creditor_id
+        ),
+        None,
+    )
+    if transfer is None:
+        return redirect("expenses:settlement", activity_id=activity.pk)
+
+    with transaction.atomic():
+        payment, created = SettlementPayment.objects.get_or_create(
+            activity=activity,
+            debtor_id=debtor_id,
+            creditor_id=creditor_id,
+            defaults={"amount": transfer.amount, "is_paid": True},
+        )
+        if not created:
+            if payment.amount != transfer.amount:
+                payment.amount = transfer.amount
+                payment.is_paid = True
+            else:
+                payment.is_paid = not payment.is_paid
+            payment.save(update_fields=["amount", "is_paid"])
+
+    return redirect("expenses:settlement", activity_id=activity.pk)
 

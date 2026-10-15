@@ -18,6 +18,11 @@ urlpatterns = [
     ),
     path("activities/<int:activity_id>/settlement/", views.settlement, name="settlement"),
     path(
+        "activities/<int:activity_id>/settlement/payments/<int:debtor_id>/<int:creditor_id>/",
+        views.toggle_settlement_payment,
+        name="toggle_settlement_payment",
+    ),
+    path(
         "trips/new/",
         RedirectView.as_view(pattern_name="expenses:create_activity", permanent=False),
     ),

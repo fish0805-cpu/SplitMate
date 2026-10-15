@@ -419,6 +419,12 @@ html[lang="en"] .hero-lead { white-space: normal; }
 .transfer-card small, .transfer-card strong { display: block; }
 .transfer-card small { color: var(--muted); }
 .transfer-card strong { font-size: 1.55rem; }
+.payment-status { display: inline-flex; align-items: center; justify-content: center; min-height: 36px; margin-top: 12px; border: 1px solid; border-radius: 999px; padding: 6px 13px; font-size: 0.92rem; font-weight: 850; }
+.payment-status-unpaid { border-color: #e6b66b; background: #fff4df; color: #88520b; }
+.payment-status-unpaid::before { width: 8px; height: 8px; margin-right: 7px; border-radius: 50%; background: currentColor; content: ""; }
+.payment-status-paid { border-color: #8bc8a7; background: #e5f5eb; color: #176d40; }
+.payment-toggle { display: block; min-height: 36px; margin: 9px 0 0 auto; border: 1px solid var(--accent); border-radius: 999px; background: white; color: var(--accent-dark); font: inherit; font-size: 0.84rem; font-weight: 780; padding: 6px 12px; cursor: pointer; }
+.payment-toggle:hover { background: var(--accent-soft); }
 
 .site-footer { padding: 28px 0 40px; color: var(--muted); font-size: 0.85rem; }
 

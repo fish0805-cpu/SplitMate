@@ -21,6 +21,7 @@ class Settlement:
     debtor: Member
     creditor: Member
     amount: Decimal
+    is_paid: bool = False
 
 
 def _to_minor_units(amount: Decimal) -> int:

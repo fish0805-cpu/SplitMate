@@ -398,3 +398,15 @@ msgstr "All balances are zero. This activity is settled."
 
 msgid "、"
 msgstr ", "
+
+msgid "未付款"
+msgstr "Unpaid"
+
+msgid "已付款"
+msgstr "Paid"
+
+msgid "標記為已付款"
+msgstr "Mark as paid"
+
+msgid "取消付款標記"
+msgstr "Mark as unpaid"
